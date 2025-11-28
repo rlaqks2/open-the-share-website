@@ -1,16 +1,15 @@
-package com.opentheshare.backend.entity;
+package com.opentheshare.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
 @Entity
-public class Testimonial {
+public class Faq {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private String role;
+    private String question;
     @Column(length = 1000)
-    private String quote;
+    private String answer;
 }

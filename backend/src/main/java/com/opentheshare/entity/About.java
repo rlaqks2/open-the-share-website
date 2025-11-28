@@ -1,4 +1,4 @@
-package com.opentheshare.backend.entity;
+package com.opentheshare.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.opentheshare.backend;
+package com.opentheshare;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

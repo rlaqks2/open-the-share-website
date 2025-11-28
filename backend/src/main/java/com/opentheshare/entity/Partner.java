@@ -1,15 +1,14 @@
-package com.opentheshare.backend.entity;
+package com.opentheshare.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
 @Entity
-public class Program {
+public class Partner {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String title;
-    private String description;
-    private String icon;
+    private String name;
+    private String logo;
 }

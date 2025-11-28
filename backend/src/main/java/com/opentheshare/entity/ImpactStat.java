@@ -1,15 +1,14 @@
-package com.opentheshare.backend.entity;
+package com.opentheshare.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
 @Entity
-public class AboutFeature {
+public class ImpactStat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String icon;
-    private String title;
-    private String description;
+    private String value;
+    private String label;
 }

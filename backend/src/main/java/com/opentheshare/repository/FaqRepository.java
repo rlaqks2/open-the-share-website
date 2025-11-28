@@ -1,6 +1,6 @@
-package com.opentheshare.backend.repository;
+package com.opentheshare.repository;
 
-import com.opentheshare.backend.entity.Faq;
+import com.opentheshare.entity.Faq;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FaqRepository extends JpaRepository<Faq, Long> {

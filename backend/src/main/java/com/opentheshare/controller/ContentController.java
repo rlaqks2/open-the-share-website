@@ -1,7 +1,7 @@
-package com.opentheshare.backend.controller;
+package com.opentheshare.controller;
 
-import com.opentheshare.backend.entity.*;
-import com.opentheshare.backend.repository.*;
+import com.opentheshare.entity.*;
+import com.opentheshare.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
