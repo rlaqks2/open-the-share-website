@@ -1,125 +1,116 @@
 # OpenThe Share - 기업 사회공헌 프로그램 전문 파트너
 
-본 프로젝트는 기업의 사회공헌 및 ESG 경영 프로그램을 전문으로 하는 "OpenThe Share"의 공식 웹사이트 랜딩 페이지입니다. 깔끔한 컴포넌트 기반 아키텍처를 따라 React, TypeScript, Tailwind CSS를 사용하여 구축된 모던하고 반응형인 웹 애플리케이션입니다.
+본 프로젝트는 기업의 사회공헌 및 ESG 경영 프로그램을 전문으로 하는 "OpenThe Share"의 공식 웹사이트입니다. React, TypeScript, Tailwind CSS를 사용한 프론트엔드와 Spring Boot, PostgreSQL을 사용한 백엔드로 구성된 풀스택 웹 애플리케이션입니다.
 
 ## 목차
 
 - [프로젝트 요약](#프로젝트-요약)
 - [주요 기술 스택](#주요-기술-스택)
+- [프로젝트 구조](#프로젝트-구조)
 - [시작하기](#시작하기)
   - [사전 준비물](#사전-준비물)
-  - [설치 및 로컬 환경에서 실행하기](#설치-및-로컬-환경에서-실행하기)
-- [소스 코드 구조](#소스-코드-구조)
+  - [Frontend 실행](#frontend-실행)
+  - [Backend 실행](#backend-실행)
 
 ## 프로젝트 요약
 
-이 웹 애플리케이션은 OpenThe Share의 온라인 공식 창구 역할을 합니다. 회사의 비전, 제공하는 서비스, 성공적인 프로젝트 포트폴리오, 그리고 사회에 미친 긍정적인 영향 등을 잠재적인 기업 파트너에게 효과적으로 전달하는 것을 목표로 합니다. 사용자의 참여를 유도하는 인터랙티브한 섹션, 고객 후기, 그리고 명확한 파트너십 문의 채널을 제공하여 정보 제공과 비즈니스 기회 창출을 동시에 달성하도록 설계되었습니다.
+이 웹 애플리케이션은 OpenThe Share의 온라인 공식 창구 역할을 합니다. 회사의 비전, 제공하는 서비스, 성공적인 프로젝트 포트폴리오, 그리고 사회에 미친 긍정적인 영향 등을 잠재적인 기업 파트너에게 효과적으로 전달하는 것을 목표로 합니다.
 
 ## 주요 기술 스택
 
+### Frontend
 - **프레임워크:** [React](https://reactjs.org/)
 - **언어:** [TypeScript](https://www.typescriptlang.org/)
 - **스타일링:** [Tailwind CSS](https://tailwindcss.com/)
 - **빌드 도구:** [Vite](https://vitejs.dev/)
-- **백엔드:** [Spring Boot 3.2.5](https://spring.io/projects/spring-boot)
-- **언어 (백엔드):** [Java 17](https://www.oracle.com/java/)
+
+### Backend
+- **프레임워크:** [Spring Boot 3.2.5](https://spring.io/projects/spring-boot)
+- **언어:** [Java 17](https://www.oracle.com/java/)
+- **ORM:** Spring Data JPA
 - **데이터베이스:** [PostgreSQL](https://www.postgresql.org/)
 
-## 시작하기
-
-아래의 안내에 따라 프로젝트를 로컬 컴퓨터에 복제하고, 개발 및 테스트를 위해 실행할 수 있습니다.
-# OpenThe Share - 기업 사회공헌 프로그램 전문 파트너
-
-본 프로젝트는 기업의 사회공헌 및 ESG 경영 프로그램을 전문으로 하는 "OpenThe Share"의 공식 웹사이트 랜딩 페이지입니다. 깔끔한 컴포넌트 기반 아키텍처를 따라 React, TypeScript, Tailwind CSS를 사용하여 구축된 모던하고 반응형인 웹 애플리케이션입니다.
-
-## 목차
-
-- [프로젝트 요약](#프로젝트-요약)
-- [주요 기술 스택](#주요-기술-스택)
-- [시작하기](#시작하기)
-  - [사전 준비물](#사전-준비물)
-  - [설치 및 로컬 환경에서 실행하기](#설치-및-로컬-환경에서-실행하기)
-- [소스 코드 구조](#소스-코드-구조)
-
-## 프로젝트 요약
-
-이 웹 애플리케이션은 OpenThe Share의 온라인 공식 창구 역할을 합니다. 회사의 비전, 제공하는 서비스, 성공적인 프로젝트 포트폴리오, 그리고 사회에 미친 긍정적인 영향 등을 잠재적인 기업 파트너에게 효과적으로 전달하는 것을 목표로 합니다. 사용자의 참여를 유도하는 인터랙티브한 섹션, 고객 후기, 그리고 명확한 파트너십 문의 채널을 제공하여 정보 제공과 비즈니스 기회 창출을 동시에 달성하도록 설계되었습니다.
-
-## 주요 기술 스택
-
-- **프레임워크:** [React](https://reactjs.org/)
-- **언어:** [TypeScript](https://www.typescriptlang.org/)
-- **스타일링:** [Tailwind CSS](https://tailwindcss.com/)
-- **빌드 도구:** [Vite](https://vitejs.dev/)
-- **백엔드:** [Spring Boot 3.2.5](https://spring.io/projects/spring-boot)
-- **언어 (백엔드):** [Java 17](https://www.oracle.com/java/)
-- **데이터베이스:** [PostgreSQL](https://www.postgresql.org/)
-
-## 시작하기
-
-아래의 안내에 따라 프로젝트를 로컬 컴퓨터에 복제하고, 개발 및 테스트를 위해 실행할 수 있습니다.
-
-### 사전 준비물
-
-이 프로젝트를 실행하기 위해서는 [Node.js](https://nodejs.org/) (버전 18.x 이상 권장)와 [npm](https://www.npmjs.com/)이 컴퓨터에 설치되어 있어야 합니다.
-또한 백엔드 실행을 위해 [Java 17](https://www.oracle.com/java/technologies/downloads/#java17) (JDK)과 [PostgreSQL](https://www.postgresql.org/download/)이 설치되어 있어야 합니다.
-
-### 설치 및 로컬 환경에서 실행하기
-
-1.  **의존성 패키지 설치:**
-    아래 명령어를 실행하여 `package.json` 파일에 정의된 모든 필수 라이브러리를 설치합니다.
-    ```bash
-    npm install
-    ```
-
-2.  **개발 서버 실행:**
-    이 명령어는 Vite 개발 서버를 시작합니다. 일반적으로 `http://localhost:5173` 주소로 서버가 열립니다.
-    ```bash
-    npm run dev
-    ```
-
-3.  **브라우저에서 확인:**
-    웹 브라우저를 열고 `http://localhost:5173` 주소로 이동하면 실행 중인 애플리케이션을 확인할 수 있습니다.
-
-4.  **백엔드 설정 및 실행:**
-    *   **데이터베이스 생성:** PostgreSQL에서 `opentheshare`라는 이름의 데이터베이스를 생성합니다.
-    *   **설정 확인:** `backend/src/main/resources/application.yml` 파일에서 데이터베이스 접속 정보(URL, username, password)를 확인하고 필요시 수정합니다.
-    *   **서버 실행:** `backend` 디렉토리로 이동하여 다음 명령어를 실행합니다.
-        ```bash
-        cd backend
-        ./gradlew bootRun
-        ```
-    *   백엔드 서버는 기본적으로 `http://localhost:8080`에서 실행됩니다.
-
-## 소스 코드 구조
-
-이 프로젝트는 코드의 모듈성, 재사용성, 그리고 유지보수성을 극대화하기 위해 컴포넌트 기반 아키텍처를 채택했습니다.
+## 프로젝트 구조
 
 ```
 /
-├── backend/             # Spring Boot 백엔드 소스 코드
+├── frontend/           # React + TypeScript Frontend
+│   ├── src/
+│   │   ├── components/  # React 컴포넌트
+│   │   │   ├── forms/
+│   │   │   ├── layout/
+│   │   │   ├── modals/
+│   │   │   ├── sections/
+│   │   │   └── ui/
+│   │   ├── data/       # Mock 데이터
+│   │   ├── hooks/      # 커스텀 훅
+│   │   ├── App.tsx
+│   │   ├── main.tsx
+│   │   └── types.ts
+│   ├── index.html
+│   ├── package.json
+│   ├── vite.config.ts
+│   └── tailwind.config.js
+│
+├── backend/            # Spring Boot Backend
 │   ├── src/
 │   │   ├── main/
-│   │   │   ├── java/    # Java 소스 코드
-│   │   │   └── resources/ # 설정 파일 (application.yml) 및 정적 리소스
-│   └── build.gradle     # Gradle 빌드 설정
-├── src/
-│   ├── components/      # 재사용 가능한 모든 React 컴포넌트
-│   │   ├── forms/       # 폼(입력 양식) 관련 컴포넌트
-│   │   ├── layout/      # 페이지의 전체 레이아웃을 구성하는 컴포넌트 (헤더, 푸터 등)
-│   │   ├── modals/      # 모달(팝업) 창 컴포넌트
-│   │   ├── sections/    # 페이지를 구성하는 각 콘텐츠 섹션 (소개, 포트폴리오 등)
-│   │   └── ui/          # 범용적으로 사용되는 UI 요소 (모달 래퍼 등)
-│   ├── data/            # 애플리케이션에서 사용하는 정적(mock) 데이터
-│   ├── hooks/           # 재사용 가능한 로직을 담은 커스텀 React 훅
-│   ├── App.tsx          # 애플리케이션의 최상위 컴포넌트, 전역 상태 관리
-│   ├── index.css        # 전역 스타일 및 Tailwind CSS 설정
-│   ├── main.tsx         # React 애플리케이션의 진입점
-│   └── types.ts         # TypeScript 타입 정의 파일
-├── index.html           # 애플리케이션의 기본 HTML 템플릿 파일
-├── package.json         # 프로젝트 의존성 및 스크립트 정의
-├── tailwind.config.js   # Tailwind CSS 설정 파일
-├── postcss.config.js    # PostCSS 설정 파일
-├── tsconfig.json        # TypeScript 컴파일러 설정 파일
-└── README.md            # 현재 이 파일
+│   │   │   ├── java/com/opentheshare/
+│   │   │   │   ├── controller/
+│   │   │   │   ├── entity/
+│   │   │   │   └── repository/
+│   │   │   └── resources/
+│   │   │       └── application.yml
+│   │   └── test/       # 테스트 코드
+│   └── build.gradle
+│
+└── README.md
 ```
+
+## 시작하기
+
+### 사전 준비물
+
+- **Node.js** (버전 18.x 이상) 및 **npm**
+- **Java 17** (JDK)
+- **PostgreSQL**
+
+### Frontend 실행
+
+1. **frontend 디렉토리로 이동:**
+   ```bash
+   cd frontend
+   ```
+
+2. **의존성 설치:**
+   ```bash
+   npm install
+   ```
+
+3. **개발 서버 실행:**
+   ```bash
+   npm run dev
+   ```
+   
+4. **브라우저에서 확인:**
+   - `http://localhost:5173` 접속
+
+### Backend 실행
+
+1. **PostgreSQL 데이터베이스 생성:**
+   ```sql
+   CREATE DATABASE opentheshare;
+   ```
+
+2. **설정 확인:**
+   - `backend/src/main/resources/application.yml` 파일에서 데이터베이스 접속 정보 확인
+
+3. **backend 디렉토리로 이동 및 실행:**
+   ```bash
+   cd backend
+   ./gradlew bootRun  # Windows: gradlew.bat bootRun
+   ```
+
+4. **API 확인:**
+   - 백엔드 서버: `http://localhost:8080`
+   - API 엔드포인트: `http://localhost:8080/api/content`
