@@ -6,16 +6,21 @@
  * 로고는 흑백으로 표시되다가 마우스를 올리면 컬러로 바뀌는 효과가 적용됩니다.
  */
 import React from 'react';
-import { mockData } from '../../data/mockData';
 
-const PartnersSection: React.FC = () => {
+interface PartnersSectionProps {
+    data: any[];
+}
+
+const PartnersSection: React.FC<PartnersSectionProps> = ({ data }) => {
+    if (!data) return null;
+
     return (
         <section id="partners" className="py-20">
             <div className="max-w-5xl mx-auto px-4">
                 <h2 className="text-center text-2xl font-bold mb-10">주요 고객사</h2>
                 <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-8">
                     {/* mockData.partners 배열을 순회하며 각 파트너사 로고 이미지를 렌더링 */}
-                    {mockData.partners.map((partner, index) => (
+                    {data.map((partner: any, index: number) => (
                         <img key={index} src={partner.logo} alt={partner.name} className="h-10 opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all" />
                     ))}
                 </div>

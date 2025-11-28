@@ -7,11 +7,16 @@
  * 표시되는 모든 콘텐츠는 `mockData` 파일로부터 가져옵니다.
  */
 import React from 'react';
-import { mockData } from '../../data/mockData';
 
-const AboutSection: React.FC = () => {
+interface AboutSectionProps {
+    data: any;
+}
+
+const AboutSection: React.FC<AboutSectionProps> = ({ data }) => {
+    if (!data) return null;
+
     // mockData에서 'about' 섹션에 필요한 데이터들을 구조 분해 할당으로 가져옴
-    const { title, description, features, imageUrl } = mockData.about;
+    const { title, description, features, imageUrl } = data;
 
     return (
         <section id="about" className="py-20">
@@ -21,7 +26,7 @@ const AboutSection: React.FC = () => {
                     <h2 className="text-3xl font-bold mb-4">{title}</h2>
                     <p className="text-slate-600 mb-8">{description}</p>
                     <div className="space-y-6">
-                        {features.map(feature => (
+                        {features.map((feature: any) => (
                             <div key={feature.title} className="flex items-start gap-4">
                                 <span className="text-2xl">{feature.icon}</span>
                                 <div>

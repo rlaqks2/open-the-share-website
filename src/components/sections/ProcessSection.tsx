@@ -6,9 +6,14 @@
  * 순차적으로 쉽게 이해할 수 있도록 돕습니다.
  */
 import React from 'react';
-import { mockData } from '../../data/mockData';
 
-const ProcessSection: React.FC = () => {
+interface ProcessSectionProps {
+    data: any[];
+}
+
+const ProcessSection: React.FC<ProcessSectionProps> = ({ data }) => {
+    if (!data) return null;
+
     return (
         <section id="process" className="py-20 bg-slate-50">
             <div className="max-w-7xl mx-auto px-4">
@@ -17,7 +22,7 @@ const ProcessSection: React.FC = () => {
                     {/* 중앙 타임라인 선 (데스크톱 뷰에서만 보임) */}
                     <div className="hidden md:block absolute left-1/2 -translate-x-1/2 top-5 w-1 h-full bg-slate-200"></div>
                     {/* mockData.processSteps 배열을 순회하며 각 단계를 렌더링 */}
-                    {mockData.processSteps.map((step, index) => (
+                    {data.map((step: any, index: number) => (
                         <div key={step.id} className={`flex md:items-center mb-12 ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
                             {/* 타임라인 좌/우 공간 분할을 위한 빈 div (데스크톱 뷰) */}
                             <div className="hidden md:block w-1/2"></div>

@@ -21,6 +21,39 @@
 - **언어:** [TypeScript](https://www.typescriptlang.org/)
 - **스타일링:** [Tailwind CSS](https://tailwindcss.com/)
 - **빌드 도구:** [Vite](https://vitejs.dev/)
+- **백엔드:** [Spring Boot 3.2.5](https://spring.io/projects/spring-boot)
+- **언어 (백엔드):** [Java 17](https://www.oracle.com/java/)
+- **데이터베이스:** [PostgreSQL](https://www.postgresql.org/)
+
+## 시작하기
+
+아래의 안내에 따라 프로젝트를 로컬 컴퓨터에 복제하고, 개발 및 테스트를 위해 실행할 수 있습니다.
+# OpenThe Share - 기업 사회공헌 프로그램 전문 파트너
+
+본 프로젝트는 기업의 사회공헌 및 ESG 경영 프로그램을 전문으로 하는 "OpenThe Share"의 공식 웹사이트 랜딩 페이지입니다. 깔끔한 컴포넌트 기반 아키텍처를 따라 React, TypeScript, Tailwind CSS를 사용하여 구축된 모던하고 반응형인 웹 애플리케이션입니다.
+
+## 목차
+
+- [프로젝트 요약](#프로젝트-요약)
+- [주요 기술 스택](#주요-기술-스택)
+- [시작하기](#시작하기)
+  - [사전 준비물](#사전-준비물)
+  - [설치 및 로컬 환경에서 실행하기](#설치-및-로컬-환경에서-실행하기)
+- [소스 코드 구조](#소스-코드-구조)
+
+## 프로젝트 요약
+
+이 웹 애플리케이션은 OpenThe Share의 온라인 공식 창구 역할을 합니다. 회사의 비전, 제공하는 서비스, 성공적인 프로젝트 포트폴리오, 그리고 사회에 미친 긍정적인 영향 등을 잠재적인 기업 파트너에게 효과적으로 전달하는 것을 목표로 합니다. 사용자의 참여를 유도하는 인터랙티브한 섹션, 고객 후기, 그리고 명확한 파트너십 문의 채널을 제공하여 정보 제공과 비즈니스 기회 창출을 동시에 달성하도록 설계되었습니다.
+
+## 주요 기술 스택
+
+- **프레임워크:** [React](https://reactjs.org/)
+- **언어:** [TypeScript](https://www.typescriptlang.org/)
+- **스타일링:** [Tailwind CSS](https://tailwindcss.com/)
+- **빌드 도구:** [Vite](https://vitejs.dev/)
+- **백엔드:** [Spring Boot 3.2.5](https://spring.io/projects/spring-boot)
+- **언어 (백엔드):** [Java 17](https://www.oracle.com/java/)
+- **데이터베이스:** [PostgreSQL](https://www.postgresql.org/)
 
 ## 시작하기
 
@@ -29,6 +62,7 @@
 ### 사전 준비물
 
 이 프로젝트를 실행하기 위해서는 [Node.js](https://nodejs.org/) (버전 18.x 이상 권장)와 [npm](https://www.npmjs.com/)이 컴퓨터에 설치되어 있어야 합니다.
+또한 백엔드 실행을 위해 [Java 17](https://www.oracle.com/java/technologies/downloads/#java17) (JDK)과 [PostgreSQL](https://www.postgresql.org/download/)이 설치되어 있어야 합니다.
 
 ### 설치 및 로컬 환경에서 실행하기
 
@@ -47,12 +81,28 @@
 3.  **브라우저에서 확인:**
     웹 브라우저를 열고 `http://localhost:5173` 주소로 이동하면 실행 중인 애플리케이션을 확인할 수 있습니다.
 
+4.  **백엔드 설정 및 실행:**
+    *   **데이터베이스 생성:** PostgreSQL에서 `opentheshare`라는 이름의 데이터베이스를 생성합니다.
+    *   **설정 확인:** `backend/src/main/resources/application.yml` 파일에서 데이터베이스 접속 정보(URL, username, password)를 확인하고 필요시 수정합니다.
+    *   **서버 실행:** `backend` 디렉토리로 이동하여 다음 명령어를 실행합니다.
+        ```bash
+        cd backend
+        ./gradlew bootRun
+        ```
+    *   백엔드 서버는 기본적으로 `http://localhost:8080`에서 실행됩니다.
+
 ## 소스 코드 구조
 
 이 프로젝트는 코드의 모듈성, 재사용성, 그리고 유지보수성을 극대화하기 위해 컴포넌트 기반 아키텍처를 채택했습니다.
 
 ```
 /
+├── backend/             # Spring Boot 백엔드 소스 코드
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/    # Java 소스 코드
+│   │   │   └── resources/ # 설정 파일 (application.yml) 및 정적 리소스
+│   └── build.gradle     # Gradle 빌드 설정
 ├── src/
 │   ├── components/      # 재사용 가능한 모든 React 컴포넌트
 │   │   ├── forms/       # 폼(입력 양식) 관련 컴포넌트

@@ -6,11 +6,16 @@
  * 어떤 질문이 열려 있는지를 관리하기 위해 자체적인 `openId` 상태를 가집니다.
  */
 import React, { useState } from 'react';
-import { mockData } from '../../data/mockData';
 
-const FAQSection: React.FC = () => {
+interface FAQSectionProps {
+    data: any[];
+}
+
+const FAQSection: React.FC<FAQSectionProps> = ({ data }) => {
     // 현재 열려 있는 FAQ 항목의 ID를 저장하는 state. null이면 모두 닫힌 상태.
     const [openId, setOpenId] = useState<number | null>(null);
+
+    if (!data) return null;
 
     // FAQ 항목을 열고 닫는 토글 함수
     const toggle = (id: number) => {
@@ -23,7 +28,7 @@ const FAQSection: React.FC = () => {
             <div className="max-w-3xl mx-auto px-4">
                 <h2 className="text-3xl font-bold text-center mb-12">자주 묻는 질문</h2>
                 <div className="space-y-4">
-                    {mockData.faqs.map(faq => (
+                    {data.map((faq: any) => (
                         <div key={faq.id} className="border border-slate-200 rounded-lg">
                             {/* 질문 버튼: 클릭 시 toggle 함수 호출 */}
                             <button

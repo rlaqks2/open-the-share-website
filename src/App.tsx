@@ -4,7 +4,7 @@
  * 모든 페이지 섹션과 레이아웃(헤더, 푸터)을 조립하고,
  * 모달 창들의 상태를 관리하는 중심적인 역할을 합니다.
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import HeroSection from './components/sections/HeroSection';
@@ -25,6 +25,7 @@ import InquiryModal from './components/modals/InquiryModal';
 import PortfolioDetailModal from './components/modals/PortfolioDetailModal';
 import { useScrollObserver } from './hooks/useScrollObserver';
 import { PortfolioItem } from './types';
+import { fetchContent } from './api';
 
 function App() {
     // 스크롤에 따른 섹션 애니메이션 활성화 훅
@@ -36,6 +37,19 @@ function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     // 포트폴리오 상세 모달에 표시할 아이템 정보
     const [selectedPortfolioItem, setSelectedPortfolioItem] = useState<PortfolioItem | null>(null);
+
+    // 백엔드 데이터 상태
+    const [content, setContent] = useState<any>(null);
+
+    useEffect(() => {
+        const loadContent = async () => {
+            const data = await fetchContent();
+            if (data) {
+                setContent(data);
+            }
+        };
+        loadContent();
+    }, []);
 
     // 로그인 처리 함수
     const handleLogin = () => {
@@ -63,6 +77,10 @@ function App() {
         }
     };
 
+    if (!content) {
+        return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    }
+
     return (
         <div className="font-sans antialiased text-slate-800 bg-white">
             <Header
@@ -74,14 +92,14 @@ function App() {
             />
             <main>
                 <HeroSection onInquiryClick={() => setActiveModal('inquiry')} />
-                <AboutSection />
-                <ImpactSection />
-                <ProgramsSection />
-                <ProcessSection />
-                <PortfolioSection onPortfolioItemClick={openPortfolioDetail} />
-                <TestimonialsSection />
-                <PartnersSection />
-                <FAQSection />
+                <AboutSection data={content.about} />
+                <ImpactSection data={content.impactStats} />
+                <ProgramsSection data={content.programs} />
+                <ProcessSection data={content.processSteps} />
+                <PortfolioSection data={content.portfolioItems} onPortfolioItemClick={openPortfolioDetail} />
+                <TestimonialsSection data={content.testimonials} />
+                <PartnersSection data={content.partners} />
+                <FAQSection data={content.faqs} />
                 <CTASection onInquiryClick={() => setActiveModal('inquiry')} />
             </main>
             <Footer />
