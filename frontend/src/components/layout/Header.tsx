@@ -48,9 +48,9 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn, user, onLoginClick, onLogou
     }
 
     return (
-        <header className={`sticky top-0 z-40 w-full transition-all duration-300 ${isScrolled ? 'bg-white/80 shadow-md backdrop-blur-sm' : 'bg-transparent'}`}>
-            <div className="max-w-7xl mx-auto px-4">
-                <div className="flex items-center justify-between h-20">
+        <header className={`sticky top-0 z-40 w-full transition-all duration-300 ${isScrolled ? 'bg-white/95 shadow-lg backdrop-blur-md' : 'bg-white'}`}>
+            <div className="max-w-6xl mx-auto px-6">
+                <div className="flex items-center justify-between h-24">
                     {/* 로고 */}
                     <Logo />
 
@@ -72,7 +72,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn, user, onLoginClick, onLogou
                         {/* 모바일 메뉴 토글 버튼 */}
                         <button
                             onClick={() => setMenuOpen(!isMenuOpen)}
-                            className="lg:hidden p-2"
+                            className="lg:hidden p-2 text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
                             aria-label="메뉴 열기"
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -85,7 +85,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn, user, onLoginClick, onLogou
 
             {/* 모바일 메뉴 (오버레이 방식) */}
             {isMenuOpen && (
-                <div className="lg:hidden absolute top-full left-0 w-full bg-white shadow-lg animate-slideDown">
+                <div className="lg:hidden absolute top-full left-0 w-full bg-white shadow-xl animate-slideDown border-t border-slate-100">
                     <div className="flex flex-col p-4 space-y-2">
                         <Navigation
                             links={navLinks}

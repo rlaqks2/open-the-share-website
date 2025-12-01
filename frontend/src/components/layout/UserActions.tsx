@@ -48,33 +48,33 @@ const UserActions: React.FC<UserActionsProps> = ({
 
     // Desktop layout
     return (
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-3">
             <button
                 onClick={onSearchClick}
-                className="p-2 text-slate-600 hover:text-emerald-600"
+                className="p-2.5 text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-full transition-all duration-300"
                 aria-label="검색"
             >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
             </button>
             <button
                 onClick={onInquiryClick}
-                className="hidden sm:block bg-emerald-600 text-white font-bold px-5 py-2.5 rounded-full hover:bg-emerald-700 transition-colors"
+                className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-semibold px-6 py-2.5 rounded-full hover:from-emerald-500 hover:to-emerald-400 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
             >
-                파트너십 문의
+                <span>파트너십 문의</span>
             </button>
             {isLoggedIn ? (
                 <button
                     onClick={onLogoutClick}
-                    className="hidden sm:block font-semibold text-slate-700 hover:text-emerald-600"
+                    className="hidden sm:block font-medium text-slate-700 hover:text-emerald-600 px-3 py-2 rounded-lg hover:bg-emerald-50 transition-all duration-300"
                 >
                     로그아웃
                 </button>
             ) : (
                 <button
                     onClick={onLoginClick}
-                    className="hidden sm:block font-semibold text-slate-700 hover:text-emerald-600"
+                    className="hidden sm:block font-medium text-slate-700 hover:text-emerald-600 px-3 py-2 rounded-lg hover:bg-emerald-50 transition-all duration-300"
                 >
                     로그인
                 </button>
