@@ -14,6 +14,9 @@ export interface SignupRequest {
     name: string;
     email: string;
     password: string;
+    companyName?: string;
+    businessRegistrationNumber?: string;
+    phoneNumber?: string;
 }
 
 export interface LoginRequest {
@@ -25,6 +28,7 @@ export interface User {
     id: number;
     name: string;
     email: string;
+    role?: string;
 }
 
 export interface AuthResponse extends User {

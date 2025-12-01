@@ -16,7 +16,10 @@ interface SignupModalProps {
 }
 
 const SignupModal: React.FC<SignupModalProps> = ({ onClose, onLoginClick }) => {
+    const [companyName, setCompanyName] = useState('');
     const [name, setName] = useState('');
+    const [businessRegistrationNumber, setBusinessRegistrationNumber] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -28,7 +31,14 @@ const SignupModal: React.FC<SignupModalProps> = ({ onClose, onLoginClick }) => {
         setLoading(true);
 
         try {
-            const response = await signup({ name, email, password });
+            const response = await signup({
+                companyName,
+                name,
+                businessRegistrationNumber,
+                phoneNumber,
+                email,
+                password
+            });
             console.log('Signup successful:', response);
             alert('회원가입이 완료되었습니다!');
             onLoginClick(); // Redirect to login modal
@@ -52,11 +62,40 @@ const SignupModal: React.FC<SignupModalProps> = ({ onClose, onLoginClick }) => {
                 )}
                 <input
                     type="text"
-                    placeholder="이름"
+                    placeholder="기업/단체명"
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border-slate-300 focus:ring-emerald-500 focus:border-emerald-500"
+                    aria-label="기업/단체명"
+                    required
+                    disabled={loading}
+                />
+                <input
+                    type="text"
+                    placeholder="담당자명"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="w-full px-4 py-3 rounded-lg border-slate-300 focus:ring-emerald-500 focus:border-emerald-500"
-                    aria-label="이름"
+                    aria-label="담당자명"
+                    required
+                    disabled={loading}
+                />
+                <input
+                    type="text"
+                    placeholder="사업자등록번호 (선택)"
+                    value={businessRegistrationNumber}
+                    onChange={(e) => setBusinessRegistrationNumber(e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border-slate-300 focus:ring-emerald-500 focus:border-emerald-500"
+                    aria-label="사업자등록번호"
+                    disabled={loading}
+                />
+                <input
+                    type="tel"
+                    placeholder="연락처"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border-slate-300 focus:ring-emerald-500 focus:border-emerald-500"
+                    aria-label="연락처"
                     required
                     disabled={loading}
                 />

@@ -86,20 +86,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignupClick, onFindA
                 >
                     {loading ? '로그인 중...' : '로그인'}
                 </button>
-                <div className="text-center text-sm text-slate-500 py-4">
-                    <span className="px-2">또는</span>
-                </div>
-                {/* 소셜 로그인 버튼 */}
-                <div className="flex gap-4">
-                    <button type="button" className="w-full bg-[#FEE500] text-slate-800 font-semibold py-3 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8zm-1.5-10.5c0-1.93 1.57-3.5 3.5-3.5s3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5-3.5-1.57-3.5-3.5zm-5 4.5c.167-.833 1.5-2.5 4-2.5s3.833 1.667 4 2.5v1H5.5v-1z" /></svg>
-                        카카오 로그인
-                    </button>
-                    <button type="button" className="w-full bg-[#03C75A] text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="currentColor" viewBox="0 0 16 16"><path d="M15.353 3.353l-9.899 9.899L0 7.899l1.414-1.414L5.454 10.07l8.485-8.485L15.353 3.353z" /></svg>
-                        네이버 로그인
-                    </button>
-                </div>
+
                 {/* 회원가입 및 계정찾기 링크 */}
                 <div className="text-center text-sm text-slate-500 pt-4">
                     <button type="button" onClick={onSignupClick} className="hover:underline">회원가입</button>

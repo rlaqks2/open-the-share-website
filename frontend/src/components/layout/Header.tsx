@@ -12,13 +12,14 @@ import UserActions from './UserActions';
 // Header 컴포넌트가 받는 props의 타입을 정의
 interface HeaderProps {
     isLoggedIn: boolean;
+    user?: any;
     onLoginClick: () => void;
     onLogoutClick: () => void;
     onInquiryClick: () => void;
     onSearchClick: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ isLoggedIn, onLoginClick, onLogoutClick, onInquiryClick, onSearchClick }) => {
+const Header: React.FC<HeaderProps> = ({ isLoggedIn, user, onLoginClick, onLogoutClick, onInquiryClick, onSearchClick }) => {
     // 모바일 메뉴의 열림/닫힘 상태를 관리
     const [isMenuOpen, setMenuOpen] = useState(false);
     // 스크롤 위치에 따라 헤더 배경을 변경하기 위한 상태
@@ -41,6 +42,10 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn, onLoginClick, onLogoutClick
         { name: '포트폴리오', href: '/portfolio' },
         { name: 'FAQ', href: '/faq' },
     ];
+
+    if (user?.role === 'ADMIN') {
+        navLinks.push({ name: '관리자', href: '/admin' });
+    }
 
     return (
         <header className={`sticky top-0 z-40 w-full transition-all duration-300 ${isScrolled ? 'bg-white/80 shadow-md backdrop-blur-sm' : 'bg-transparent'}`}>

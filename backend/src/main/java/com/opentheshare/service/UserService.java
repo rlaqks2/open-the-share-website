@@ -23,6 +23,10 @@ public class UserService {
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setCompanyName(dto.getCompanyName());
+        user.setBusinessRegistrationNumber(dto.getBusinessRegistrationNumber());
+        user.setPhoneNumber(dto.getPhoneNumber());
+        user.setRole(User.Role.USER); // Default role
 
         return userRepository.save(user);
     }

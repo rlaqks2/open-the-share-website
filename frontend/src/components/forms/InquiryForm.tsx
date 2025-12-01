@@ -276,6 +276,13 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onSubmitted, initialMessage }
         </label>
       </div>
 
+      {/* 에러 메시지 */}
+      {submitError && (
+        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+          {submitError}
+        </div>
+      )}
+
       {/* 제출 버튼 */}
       <button
         type="submit"

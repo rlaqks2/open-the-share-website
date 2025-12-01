@@ -13,6 +13,7 @@ import AboutPage from './pages/AboutPage';
 import ProgramsPage from './pages/ProgramsPage';
 import PortfolioPage from './pages/PortfolioPage';
 import FAQPage from './pages/FAQPage';
+import AdminPage from './pages/AdminPage';
 import LoginModal from './components/modals/LoginModal';
 import SignupModal from './components/modals/SignupModal';
 import FindAccountModal from './components/modals/FindAccountModal';
@@ -121,6 +122,7 @@ function App() {
             <div className="font-sans antialiased text-slate-800 bg-white">
                 <Header
                     isLoggedIn={isLoggedIn}
+                    user={user}
                     onLoginClick={() => setActiveModal('login')}
                     onLogoutClick={handleLogout}
                     onInquiryClick={() => setActiveModal('inquiry')}
@@ -140,6 +142,7 @@ function App() {
                         } />
                         <Route path="/portfolio" element={<PortfolioPage data={content.portfolioItems} onItemClick={openPortfolioDetail} />} />
                         <Route path="/faq" element={<FAQPage faqs={content.faqs} />} />
+                        <Route path="/admin" element={<AdminPage user={user} />} />
                     </Routes>
                 </main>
                 <Footer />
