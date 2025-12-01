@@ -3,14 +3,14 @@ package com.opentheshare.service;
 import com.opentheshare.dto.PartnershipInquiryDto;
 import com.opentheshare.entity.PartnershipInquiry;
 import com.opentheshare.repository.PartnershipInquiryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class PartnershipService {
 
-    @Autowired
-    private PartnershipInquiryRepository inquiryRepository;
+    private final PartnershipInquiryRepository inquiryRepository;
 
     public PartnershipInquiry createInquiry(PartnershipInquiryDto dto) {
         PartnershipInquiry inquiry = new PartnershipInquiry();

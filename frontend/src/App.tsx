@@ -34,6 +34,8 @@ function App() {
     const [activeModal, setActiveModal] = useState<string | null>(null);
     // 로그인 상태 관리
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    // 로그인한 사용자 정보 저장
+    const [user, setUser] = useState<any>(null);
     // 포트폴리오 상세 모달에 표시할 아이템 정보
     const [selectedPortfolioItem, setSelectedPortfolioItem] = useState<PortfolioItem | null>(null);
     // 프로그램 상세/견적 모달에 표시할 프로그램 정보
@@ -41,6 +43,20 @@ function App() {
 
     // 백엔드 데이터 상태
     const [content, setContent] = useState<any>(null);
+
+    // 페이지 로드 시 localStorage에서 로그인 상태 복원
+    useEffect(() => {
+        const savedUser = localStorage.getItem('user');
+        if (savedUser) {
+            try {
+                const userData = JSON.parse(savedUser);
+                setUser(userData);
+                setIsLoggedIn(true);
+            } catch (e) {
+                localStorage.removeItem('user');
+            }
+        }
+    }, []);
 
     useEffect(() => {
         const loadContent = async () => {
@@ -53,14 +69,21 @@ function App() {
     }, []);
 
     // 로그인 처리 함수
-    const handleLogin = () => {
+    const handleLogin = (userData?: any) => {
         setIsLoggedIn(true);
+        if (userData) {
+            setUser(userData);
+            // localStorage에 사용자 정보 저장 (비밀번호 제외)
+            localStorage.setItem('user', JSON.stringify(userData));
+        }
         setActiveModal(null); // 로그인 성공 시 모든 모달 닫기
     };
 
     // 로그아웃 처리 함수
     const handleLogout = () => {
         setIsLoggedIn(false);
+        setUser(null);
+        localStorage.removeItem('user');
     };
 
     // 포트폴리오 상세 모달 열기 함수
@@ -111,6 +134,8 @@ function App() {
                         <Route path="/programs" element={
                             <ProgramsPage
                                 data={content.programs}
+                                onProgramClick={openProgramDetail}
+                                onQuoteClick={openQuoteRequest}
                             />
                         } />
                         <Route path="/portfolio" element={<PortfolioPage data={content.portfolioItems} onItemClick={openPortfolioDetail} />} />

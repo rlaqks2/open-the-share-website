@@ -14,7 +14,7 @@ interface LoginModalProps {
     onClose: () => void;            // 모달을 닫을 때 호출될 함수
     onSignupClick: () => void;      // '회원가입' 링크 클릭 시 호출될 함수
     onFindAccountClick: () => void; // '계정찾기' 링크 클릭 시 호출될 함수
-    onLogin: () => void;            // 로그인 성공 시 호출될 함수
+    onLogin: (userData?: any) => void; // 로그인 성공 시 호출될 함수 (사용자 데이터 전달)
 }
 
 const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignupClick, onFindAccountClick, onLogin }) => {
@@ -32,7 +32,9 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignupClick, onFindA
         try {
             const response = await login({ email, password });
             console.log('Login successful:', response);
-            onLogin();
+            // 로그인 성공 시 사용자 데이터 전달하고 모달 닫기
+            onLogin(response);
+            onClose();
         } catch (err: any) {
             setError(err.message || '로그인에 실패했습니다.');
         } finally {

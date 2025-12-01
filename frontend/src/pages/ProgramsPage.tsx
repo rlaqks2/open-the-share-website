@@ -4,12 +4,18 @@ import ProgramFilterSection from '../components/sections/ProgramFilterSection';
 
 interface ProgramsPageProps {
     data: any;
+    onProgramClick?: (program: any) => void;
+    onQuoteClick?: (program: any) => void;
 }
 
-const ProgramsPage: React.FC<ProgramsPageProps> = ({ data }) => {
+const ProgramsPage: React.FC<ProgramsPageProps> = ({ data, onProgramClick, onQuoteClick }) => {
     return (
         <>
-            <ProgramsSection data={data} />
+            <ProgramsSection
+                data={data}
+                onProgramClick={onProgramClick}
+                onQuoteClick={onQuoteClick}
+            />
             <ProgramFilterSection />
         </>
     );
