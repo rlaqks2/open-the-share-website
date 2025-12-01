@@ -5,8 +5,9 @@
  * 그리고 카카오/네이버와 같은 소셜 로그인 옵션을 제공합니다.
  * 또한, '회원가입'이나 '계정찾기' 등 다른 인증 관련 모달로 이동할 수 있는 링크를 포함합니다.
  */
-import React from 'react';
+import React, { useState } from 'react';
 import Modal from '../ui/Modal';
+import { login } from '../../api';
 
 // LoginModal 컴포넌트가 받는 props의 타입을 정의
 interface LoginModalProps {
@@ -17,12 +18,26 @@ interface LoginModalProps {
 }
 
 const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignupClick, onFindAccountClick, onLogin }) => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+
     // 폼 제출 이벤트 핸들러
-    const handleLogin = (e: React.FormEvent) => {
-        e.preventDefault(); // 기본 폼 제출 동작(페이지 새로고침) 방지
-        // 실제 애플리케이션에서는 여기에 이메일/비밀번호 검증 등 인증 로직이 들어갑니다.
-        // 이 예제에서는 바로 onLogin 함수를 호출하여 로그인 성공 처리를 합니다.
-        onLogin();
+    const handleLogin = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+
+        try {
+            const response = await login({ email, password });
+            console.log('Login successful:', response);
+            onLogin();
+        } catch (err: any) {
+            setError(err.message || '로그인에 실패했습니다.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -31,15 +46,44 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignupClick, onFindA
                 <h2 className="text-2xl font-bold mb-6" id="modal-title">로그인</h2>
             </div>
             <form className="space-y-4" onSubmit={handleLogin}>
-                <input type="email" placeholder="이메일" className="w-full px-4 py-3 rounded-lg border-slate-300 focus:ring-emerald-500 focus:border-emerald-500" aria-label="이메일" />
-                <input type="password" placeholder="비밀번호" className="w-full px-4 py-3 rounded-lg border-slate-300 focus:ring-emerald-500 focus:border-emerald-500" aria-label="비밀번호" />
+                {error && (
+                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                        {error}
+                    </div>
+                )}
+                <input
+                    type="email"
+                    placeholder="이메일"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border-slate-300 focus:ring-emerald-500 focus:border-emerald-500"
+                    aria-label="이메일"
+                    required
+                    disabled={loading}
+                />
+                <input
+                    type="password"
+                    placeholder="비밀번호"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border-slate-300 focus:ring-emerald-500 focus:border-emerald-500"
+                    aria-label="비밀번호"
+                    required
+                    disabled={loading}
+                />
                 <div className="flex items-center justify-between text-sm">
                     <label className="flex items-center gap-2">
                         <input type="checkbox" className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" />
                         로그인 상태 유지
                     </label>
                 </div>
-                <button type="submit" className="w-full bg-emerald-600 text-white font-semibold py-3 rounded-lg hover:bg-emerald-700 transition-colors">로그인</button>
+                <button
+                    type="submit"
+                    className="w-full bg-emerald-600 text-white font-semibold py-3 rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={loading}
+                >
+                    {loading ? '로그인 중...' : '로그인'}
+                </button>
                 <div className="text-center text-sm text-slate-500 py-4">
                     <span className="px-2">또는</span>
                 </div>

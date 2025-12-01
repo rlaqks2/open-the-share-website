@@ -12,7 +12,7 @@ import InquiryForm from '../forms/InquiryForm';
 
 // InquiryModal 컴포넌트가 받는 props의 타입을 정의
 interface InquiryModalProps {
-  onClose: () => void; // 모달을 닫을 때 호출될 함수
+    onClose: () => void; // 모달을 닫을 때 호출될 함수
 }
 
 // 폼 제출 성공 시 보여줄 메시지 컴포넌트
@@ -31,7 +31,7 @@ const InquiryModal: React.FC<InquiryModalProps> = ({ onClose }) => {
 
     return (
         // isSubmitted 값에 따라 모달의 최대 너비를 동적으로 변경
-        <Modal open={true} onClose={onClose} maxWidth={isSubmitted ? "max-w-sm" : "max-w-2xl"}>
+        <Modal open={true} onClose={onClose} maxWidth={isSubmitted ? "max-w-sm" : "max-w-lg"}>
             {isSubmitted ? (
                 // 제출 완료 시 성공 메시지 렌더링
                 <SuccessMessage onClose={onClose} />

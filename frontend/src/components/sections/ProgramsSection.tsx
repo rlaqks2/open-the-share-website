@@ -8,9 +8,11 @@ import React from 'react';
 
 interface ProgramsSectionProps {
     data: any[];
+    onProgramClick?: (program: any) => void;
+    onQuoteClick?: (program: any) => void;
 }
 
-const ProgramsSection: React.FC<ProgramsSectionProps> = ({ data }) => {
+const ProgramsSection: React.FC<ProgramsSectionProps> = ({ data, onProgramClick, onQuoteClick }) => {
     if (!data) return null;
 
     return (
@@ -20,10 +22,25 @@ const ProgramsSection: React.FC<ProgramsSectionProps> = ({ data }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {/* mockData.programs 배열을 순회하며 각 프로그램 정보를 카드로 렌더링 */}
                     {data.map((program: any) => (
-                        <div key={program.id} className="text-center p-8 border border-slate-200 rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all">
-                            <div className="text-5xl mb-4">{program.icon}</div>
-                            <h3 className="text-xl font-bold mb-2">{program.title}</h3>
-                            <p className="text-slate-500">{program.description}</p>
+                        <div key={program.id} className="flex flex-col h-full text-center p-8 border border-slate-200 rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all bg-white group">
+                            <div className="text-5xl mb-6 group-hover:scale-110 transition-transform duration-300">{program.icon}</div>
+                            <h3 className="text-xl font-bold mb-3">{program.title}</h3>
+                            <p className="text-slate-500 mb-6 flex-grow">{program.description}</p>
+
+                            <div className="flex flex-col space-y-2 mt-auto">
+                                <button
+                                    onClick={() => onProgramClick && onProgramClick(program)}
+                                    className="w-full py-2 px-4 border border-emerald-600 text-emerald-600 rounded-lg font-semibold hover:bg-emerald-50 transition-colors"
+                                >
+                                    자세히 보기
+                                </button>
+                                <button
+                                    onClick={() => onQuoteClick && onQuoteClick(program)}
+                                    className="w-full py-2 px-4 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-colors shadow-md hover:shadow-lg"
+                                >
+                                    견적 문의
+                                </button>
+                            </div>
                         </div>
                     ))}
                 </div>

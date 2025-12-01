@@ -112,5 +112,5 @@
    ```
 
 4. **API 확인:**
-   - 백엔드 서버: `http://localhost:8080`
-   - API 엔드포인트: `http://localhost:8080/api/content`
+   - 백엔드 서버: `http://localhost:7070`
+   - API 엔드포인트: `http://localhost:7070/api/content`

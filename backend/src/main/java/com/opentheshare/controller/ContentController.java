@@ -1,8 +1,10 @@
 package com.opentheshare.controller;
 
+import com.opentheshare.dto.ApiResponse;
 import com.opentheshare.entity.*;
 import com.opentheshare.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,29 +17,21 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:5173")
+@RequiredArgsConstructor
 public class ContentController {
 
-    @Autowired
-    private AboutRepository aboutRepository;
-    @Autowired
-    private AboutFeatureRepository aboutFeatureRepository;
-    @Autowired
-    private ImpactStatRepository impactStatRepository;
-    @Autowired
-    private ProgramRepository programRepository;
-    @Autowired
-    private ProcessStepRepository processStepRepository;
-    @Autowired
-    private PortfolioItemRepository portfolioItemRepository;
-    @Autowired
-    private TestimonialRepository testimonialRepository;
-    @Autowired
-    private PartnerRepository partnerRepository;
-    @Autowired
-    private FaqRepository faqRepository;
+    private final AboutRepository aboutRepository;
+    private final AboutFeatureRepository aboutFeatureRepository;
+    private final ImpactStatRepository impactStatRepository;
+    private final ProgramRepository programRepository;
+    private final ProcessStepRepository processStepRepository;
+    private final PortfolioItemRepository portfolioItemRepository;
+    private final TestimonialRepository testimonialRepository;
+    private final PartnerRepository partnerRepository;
+    private final FaqRepository faqRepository;
 
     @GetMapping("/content")
-    public Map<String, Object> getAllContent() {
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getAllContent() {
         Map<String, Object> content = new HashMap<>();
 
         // About
@@ -60,6 +54,6 @@ public class ContentController {
         content.put("partners", partnerRepository.findAll());
         content.put("faqs", faqRepository.findAll());
 
-        return content;
+        return ResponseEntity.ok(ApiResponse.success("Content fetched successfully", content));
     }
 }

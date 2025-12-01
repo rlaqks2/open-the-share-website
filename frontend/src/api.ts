@@ -1,12 +1,143 @@
+import { mockData } from './data/mockData';
+
+const API_BASE_URL = 'http://localhost:7070/api';
+
+// Generic API Response type
+export interface ApiResponse<T> {
+    success: boolean;
+    message: string;
+    data: T;
+}
+
+// Types for API requests/responses
+export interface SignupRequest {
+    name: string;
+    email: string;
+    password: string;
+}
+
+export interface LoginRequest {
+    email: string;
+    password: string;
+}
+
+export interface User {
+    id: number;
+    name: string;
+    email: string;
+}
+
+export interface AuthResponse extends User {
+    message: string;
+}
+
+export interface PartnershipInquiryRequest {
+    company: string;
+    companySize: string;
+    manager: string;
+    title?: string;
+    phone: string;
+    email: string;
+    programType?: string;
+    participants?: string;
+    preferredDate?: string;
+    budget?: string;
+    message?: string;
+}
+
+// Content API
 export const fetchContent = async () => {
     try {
-        const response = await fetch('http://localhost:8080/api/content');
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
+        const response = await fetch(`${API_BASE_URL}/content`, {
+            signal: AbortSignal.timeout(3000) // 3 second timeout
+        });
+
+        const result: ApiResponse<any> = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || 'Network response was not ok');
         }
-        return await response.json();
+        return result.data;
     } catch (error) {
-        console.error('There was a problem with the fetch operation:', error);
-        return null;
+        console.warn('Backend unavailable, using mock data:', error);
+        // Fallback to mock data when backend is not available
+        return mockData;
     }
+};
+
+// Authentication APIs
+export const signup = async (data: SignupRequest): Promise<AuthResponse> => {
+    const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    });
+
+    const result: ApiResponse<User> = await response.json();
+
+    if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Signup failed');
+    }
+
+    return {
+        ...result.data,
+        message: result.message
+    };
+};
+
+export const login = async (data: LoginRequest): Promise<AuthResponse> => {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    });
+
+    const result: ApiResponse<User> = await response.json();
+
+    if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Login failed');
+    }
+
+    return {
+        ...result.data,
+        message: result.message
+    };
+};
+
+export const logout = async (): Promise<void> => {
+    const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+
+    const result: ApiResponse<void> = await response.json();
+
+    if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Logout failed');
+    }
+};
+
+// Partnership API
+export const submitPartnershipInquiry = async (data: PartnershipInquiryRequest): Promise<ApiResponse<any>> => {
+    const response = await fetch(`${API_BASE_URL}/partnership/inquiry`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    });
+
+    const result: ApiResponse<any> = await response.json();
+
+    if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to submit inquiry');
+    }
+
+    return result;
 };
