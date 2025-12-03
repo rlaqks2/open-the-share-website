@@ -52,6 +52,11 @@ export interface PartnershipInquiryRequest {
 // Content API
 export const fetchContent = async () => {
     try {
+        // Check if we are in production mode (Vite build)
+        if (import.meta.env.PROD) {
+            return mockData;
+        }
+
         const response = await fetch(`${API_BASE_URL}/content`, {
             signal: AbortSignal.timeout(3000) // 3 second timeout
         });

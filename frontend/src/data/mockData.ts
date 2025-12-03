@@ -27,10 +27,8 @@ export const mockData = {
   ],
   // '주요 사업 분야' 섹션에 사용될 데이터
   programs: [
-    { id: 1, title: "환경보호", description: "도심 숲 가꾸기, 해변 정화 활동 등", icon: "🌳" },
-    { id: 2, title: "지역사회 기여", description: "취약계층 주거 개선, 벽화 그리기 등", icon: "🏘️" },
-    { id: 3, title: "아동/청소년 지원", description: "교육 멘토링, 학습 환경 개선 등", icon: "🎓" },
-    { id: 4, title: "문화/예술 나눔", description: "문화 소외계층을 위한 공연, 전시 지원", icon: "🎨" }
+    { id: 1, title: "온앤온", description: "[대면] One-Day Making 사회공헌활동", icon: "🤝" },
+    { id: 2, title: "온팅", description: "[비대면] One-Day Making 사회공헌활동", icon: "💻" }
   ],
   // '진행 절차' 섹션에 사용될 데이터
   processSteps: [

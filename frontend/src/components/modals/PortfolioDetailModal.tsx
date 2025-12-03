@@ -21,7 +21,7 @@ const PortfolioDetailModal: React.FC<PortfolioDetailModalProps> = ({ item, onClo
 
     return (
         // `noPadding={true}`를 전달하여 Modal 컴포넌트의 기본 패딩을 제거하고, 내부에서 직접 레이아웃을 제어
-        <Modal open={true} onClose={onClose} maxWidth="max-w-4xl" noPadding={true}>
+        <Modal open={true} onClose={onClose} maxWidth="max-w-4xl" noPadding={true} showCloseButton={false}>
             <div className="relative">
                 {/* 닫기 버튼 */}
                 <button onClick={onClose} className="absolute top-4 right-4 z-10 bg-black/40 text-white rounded-full p-2 hover:bg-black/60 transition-colors" aria-label="닫기">

@@ -17,6 +17,7 @@ interface ModalProps {
     children: React.ReactNode;      // 모달 내부에 표시될 콘텐츠
     maxWidth?: string;              // 모달의 최대 너비 (Tailwind CSS 클래스, 예: 'max-w-lg')
     noPadding?: boolean;            // 내부 패딩 제거 여부
+    showCloseButton?: boolean;      // 닫기 버튼 표시 여부
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -24,7 +25,8 @@ const Modal: React.FC<ModalProps> = ({
     onClose,
     children,
     maxWidth = 'max-w-lg', // 기본 최대 너비 설정
-    noPadding = false
+    noPadding = false,
+    showCloseButton = true
 }) => {
     // useEffect를 사용하여 모달의 열림/닫힘 상태에 따른 부수 효과(side effect)를 관리
     useEffect(() => {
@@ -66,6 +68,17 @@ const Modal: React.FC<ModalProps> = ({
                     // 모달 콘텐츠 영역 클릭 시 이벤트가 배경으로 전파되는 것을 막음(이벤트 버블링 방지)
                     onClick={(e) => e.stopPropagation()}
                 >
+                    {showCloseButton && (
+                        <button
+                            onClick={onClose}
+                            className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors z-10"
+                            aria-label="Close"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    )}
                     {children}
                 </div>
             </div>
