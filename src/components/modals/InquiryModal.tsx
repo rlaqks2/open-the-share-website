@@ -12,7 +12,7 @@ import InquiryForm from '../forms/InquiryForm';
 
 // InquiryModal 컴포넌트가 받는 props의 타입을 정의
 interface InquiryModalProps {
-  onClose: () => void; // 모달을 닫을 때 호출될 함수
+    onClose: () => void; // 모달을 닫을 때 호출될 함수
 }
 
 // 폼 제출 성공 시 보여줄 메시지 컴포넌트
@@ -25,25 +25,52 @@ const SuccessMessage: React.FC<{ onClose: () => void }> = ({ onClose }) => (
     </div>
 );
 
+// 폼 제출 실패 시 보여줄 메시지 컴포넌트
+const ErrorMessage: React.FC<{ onClose: () => void, onRetry: () => void }> = ({ onClose, onRetry }) => (
+    <div className="text-center p-4">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-rose-100 text-rose-700 text-4xl">✕</div>
+        <h3 className="text-xl font-bold mb-2">신청이 실패하였습니다</h3>
+        <p className="text-slate-600 mb-6">일시적인 오류가 발생했습니다.<br />잠시 후 다시 시도해주세요.</p>
+        <div className="flex gap-3">
+            <button onClick={onClose} className="flex-1 bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-lg hover:bg-slate-300">닫기</button>
+            <button onClick={onRetry} className="flex-1 bg-rose-600 text-white font-semibold py-2.5 rounded-lg hover:bg-rose-700">다시 시도</button>
+        </div>
+    </div>
+);
+
 const InquiryModal: React.FC<InquiryModalProps> = ({ onClose }) => {
     // 폼 제출 여부를 관리하는 state
     const [isSubmitted, setSubmitted] = useState(false);
+    // 폼 제출 실패 여부를 관리하는 state
+    const [isError, setError] = useState(false);
+
+    // content to render based on state
+    let content;
+    if (isSubmitted) {
+        content = <SuccessMessage onClose={onClose} />;
+    } else if (isError) {
+        content = <ErrorMessage onClose={onClose} onRetry={() => setError(false)} />;
+    } else {
+        content = (
+            <>
+                <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors" aria-label="닫기">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+                <h2 className="text-2xl font-bold mb-6 text-center" id="modal-title">파트너십 문의</h2>
+                {/* InquiryForm의 onSubmitted prop으로 setSubmitted(true)를 전달하여,
+                    폼 제출이 완료되면 isSubmitted 상태를 true로 변경 */}
+                <InquiryForm
+                    onSubmitted={() => setSubmitted(true)}
+                    onError={() => setError(true)}
+                />
+            </>
+        );
+    }
 
     return (
-        // isSubmitted 값에 따라 모달의 최대 너비를 동적으로 변경
-        <Modal open={true} onClose={onClose} maxWidth={isSubmitted ? "max-w-sm" : "max-w-2xl"}>
-            {isSubmitted ? (
-                // 제출 완료 시 성공 메시지 렌더링
-                <SuccessMessage onClose={onClose} />
-            ) : (
-                // 초기 상태일 때 문의 폼 렌더링
-                <>
-                    <h2 className="text-2xl font-bold mb-6 text-center" id="modal-title">파트너십 문의</h2>
-                    {/* InquiryForm의 onSubmitted prop으로 setSubmitted(true)를 전달하여,
-                        폼 제출이 완료되면 isSubmitted 상태를 true로 변경 */}
-                    <InquiryForm onSubmitted={() => setSubmitted(true)} />
-                </>
-            )}
+        // 상태에 따라 모달의 최대 너비를 동적으로 변경
+        <Modal open={true} onClose={onClose} maxWidth={(isSubmitted || isError) ? "max-w-sm" : "max-w-2xl"}>
+            {content}
         </Modal>
     );
 };

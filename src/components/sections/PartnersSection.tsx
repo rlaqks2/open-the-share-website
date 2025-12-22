@@ -12,7 +12,7 @@ const PartnersSection: React.FC = () => {
     return (
         <section id="partners" className="py-20">
             <div className="max-w-5xl mx-auto px-4">
-                <h2 className="text-center text-2xl font-bold mb-10">주요 고객사</h2>
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">주요 파트너사</h2>
                 <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-8">
                     {/* mockData.partners 배열을 순회하며 각 파트너사 로고 이미지를 렌더링 */}
                     {mockData.partners.map((partner, index) => (

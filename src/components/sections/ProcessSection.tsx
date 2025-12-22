@@ -12,7 +12,7 @@ const ProcessSection: React.FC = () => {
     return (
         <section id="process" className="py-20 bg-slate-50">
             <div className="max-w-7xl mx-auto px-4">
-                <h2 className="text-3xl font-bold text-center mb-12">프로그램 진행 절차</h2>
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">진행 프로세스</h2>
                 <div className="relative">
                     {/* 중앙 타임라인 선 (데스크톱 뷰에서만 보임) */}
                     <div className="hidden md:block absolute left-1/2 -translate-x-1/2 top-5 w-1 h-full bg-slate-200"></div>

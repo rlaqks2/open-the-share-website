@@ -17,9 +17,6 @@ import TestimonialsSection from './components/sections/TestimonialsSection';
 import PartnersSection from './components/sections/PartnersSection';
 import FAQSection from './components/sections/FAQSection';
 import CTASection from './components/sections/CTASection';
-import LoginModal from './components/modals/LoginModal';
-import SignupModal from './components/modals/SignupModal';
-import FindAccountModal from './components/modals/FindAccountModal';
 import SearchModal from './components/modals/SearchModal';
 import InquiryModal from './components/modals/InquiryModal';
 import PortfolioDetailModal from './components/modals/PortfolioDetailModal';
@@ -32,21 +29,8 @@ function App() {
 
     // 모달 상태 관리를 위한 state
     const [activeModal, setActiveModal] = useState<string | null>(null);
-    // 로그인 상태 관리
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
     // 포트폴리오 상세 모달에 표시할 아이템 정보
     const [selectedPortfolioItem, setSelectedPortfolioItem] = useState<PortfolioItem | null>(null);
-
-    // 로그인 처리 함수
-    const handleLogin = () => {
-        setIsLoggedIn(true);
-        setActiveModal(null); // 로그인 성공 시 모든 모달 닫기
-    };
-
-    // 로그아웃 처리 함수
-    const handleLogout = () => {
-        setIsLoggedIn(false);
-    };
 
     // 포트폴리오 상세 모달 열기 함수
     const openPortfolioDetail = (item: PortfolioItem) => {
@@ -66,9 +50,6 @@ function App() {
     return (
         <div className="font-sans antialiased text-slate-800 bg-white">
             <Header
-                isLoggedIn={isLoggedIn}
-                onLoginClick={() => setActiveModal('login')}
-                onLogoutClick={handleLogout}
                 onInquiryClick={() => setActiveModal('inquiry')}
                 onSearchClick={() => setActiveModal('search')}
             />
@@ -87,21 +68,6 @@ function App() {
             <Footer />
 
             {/* 활성화된 모달 렌더링 */}
-            {activeModal === 'login' && (
-                <LoginModal
-                    onClose={closeModal}
-                    onLogin={handleLogin}
-                    onSignupClick={() => setActiveModal('signup')}
-                    onFindAccountClick={() => setActiveModal('findAccount')}
-                />
-            )}
-            {activeModal === 'signup' && (
-                <SignupModal
-                    onClose={closeModal}
-                    onLoginClick={() => setActiveModal('login')}
-                />
-            )}
-            {activeModal === 'findAccount' && <FindAccountModal onClose={closeModal} />}
             {activeModal === 'search' && <SearchModal onClose={closeModal} />}
             {activeModal === 'inquiry' && <InquiryModal onClose={closeModal} />}
             {activeModal === 'portfolioDetail' && (

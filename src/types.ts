@@ -14,4 +14,5 @@ export interface PortfolioItem {
   period: string;       // 프로젝트 진행 기간
   participants: number; // 참여 인원 수
   story: string;        // 프로젝트 상세 설명
+  blogLink?: string;    // 관련 블로그 포스트 링크 (선택적)
 }

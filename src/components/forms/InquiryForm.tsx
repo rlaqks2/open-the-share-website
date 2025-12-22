@@ -6,13 +6,15 @@
  * 제출 시 부모 컴포넌트로부터 받은 `onSubmitted` 콜백 함수를 호출합니다.
  */
 import React, { useState } from 'react';
+import emailjs from '@emailjs/browser';
 
 // InquiryForm 컴포넌트가 받는 props의 타입을 정의
 interface InquiryFormProps {
   onSubmitted: () => void; // 폼 제출이 성공적으로 완료되었을 때 호출될 함수
+  onError?: () => void; // 폼 제출 실패 시 호출될 함수
 }
 
-const InquiryForm: React.FC<InquiryFormProps> = ({ onSubmitted }) => {
+const InquiryForm: React.FC<InquiryFormProps> = ({ onSubmitted, onError }) => {
   // 폼의 각 필드 값을 관리하는 state
   const [form, setForm] = useState({
     company: '',
@@ -37,10 +39,33 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onSubmitted }) => {
       return;
     }
 
-    // 실제 애플리케이션에서는 여기서 서버로 폼 데이터를 전송하는 로직이 들어갑니다.
-    // 이 예제에서는 콘솔에 데이터를 출력하고 onSubmitted 콜백을 호출합니다.
-    console.log("제출된 폼 데이터:", form);
-    onSubmitted();
+    // EmailJS 서비스 설정 값 (EmailJS 대시보드에서 확인 가능)
+    // TODO: 아래 값들을 실제 EmailJS 계정의 값으로 교체해야 합니다.
+    const SERVICE_ID = "service_49uwd6l";
+    const TEMPLATE_ID = "template_pm65did";
+    const PUBLIC_KEY = "vShddPvGInIVoVMuQ";
+
+    // 템플릿 파라미터 준비 (EmailJS 템플릿 변수명과 일치시켜야 함)
+    const templateParams = {
+      to_email: 'rlaqks2@gmail.com', // 이 이메일로 문의 내용이 도착합니다. (EmailJS 템플릿 설정 필요)
+      from_name: form.manager,
+      from_company: form.company,
+      from_email: form.email,
+      phone: form.phone,
+      title: form.title,
+      message: form.message,
+    };
+
+    // EmailJS로 이메일 전송
+    // EmailJS로 이메일 전송
+    emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY)
+      .then(() => {
+        onSubmitted();
+      }, (err) => {
+        console.error(err);
+        if (onError) onError();
+        else alert('이메일 전송에 실패했습니다. 다시 시도해주세요.');
+      });
   };
 
   return (

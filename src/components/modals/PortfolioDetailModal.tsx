@@ -40,15 +40,36 @@ const PortfolioDetailModal: React.FC<PortfolioDetailModalProps> = ({ item, onClo
                         {/* 프로젝트 개요 */}
                         <div className="bg-slate-50 rounded-lg p-6 mb-8 border border-slate-200">
                             <h3 className="text-lg font-bold mb-4">프로젝트 개요</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-slate-600">
-                                <div><strong className="font-semibold text-slate-800 block">파트너사</strong> {item.partner}</div>
-                                <div><strong className="font-semibold text-slate-800 block">프로젝트 기간</strong> {item.period}</div>
-                                <div><strong className="font-semibold text-slate-800 block">참여 인원</strong> {item.participants}명</div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
+                                <div>
+                                    <span className="block text-sm text-gray-500">파트너사</span>
+                                    <span className="font-semibold text-gray-900">{item.partner}</span>
+                                </div>
+                                <div>
+                                    <span className="block text-sm text-gray-500">프로젝트 기간</span>
+                                    <span className="font-semibold text-gray-900">{item.period}</span>
+                                </div>
+                                <div>
+                                    <span className="block text-sm text-gray-500">참여 인원</span>
+                                    <span className="font-semibold text-gray-900">{item.participants}명</span>
+                                </div>
                             </div>
                         </div>
                         {/* 프로젝트 상세 스토리 */}
                         <div className="prose max-w-none text-slate-700">
                             <p>{item.story}</p>
+                            {item.blogLink && (
+                                <div className="mt-8 text-center">
+                                    <a
+                                        href={item.blogLink}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-block bg-emerald-600 text-white font-bold px-6 py-3 rounded-full hover:bg-emerald-700 transition-colors"
+                                    >
+                                        블로그 보러가기
+                                    </a>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
