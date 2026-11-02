@@ -1,75 +1,47 @@
 # OpenThe Share - 기업 사회공헌 프로그램 전문 파트너
 
-본 프로젝트는 기업의 사회공헌 및 ESG 경영 프로그램을 전문으로 하는 "OpenThe Share"의 공식 웹사이트 랜딩 페이지입니다. 깔끔한 컴포넌트 기반 아키텍처를 따라 React, TypeScript, Tailwind CSS를 사용하여 구축된 모던하고 반응형인 웹 애플리케이션입니다.
+본 프로젝트는 기업의 사회공헌 및 ESG 경영 프로그램을 전문으로 하는 "OpenThe Share"의 공식 웹사이트 랜딩 페이지입니다. React, TypeScript, Tailwind CSS를 사용하여 구축된 모던하고 반응형인 웹 애플리케이션입니다.
 
-## 목차
+* 🌐 **배포 사이트**: [https://rlaqks2.github.io/open-the-share-website/](https://rlaqks2.github.io/open-the-share-website/)
+* 📘 **기획자/비개발자 작업 가이드**: [docs/PLANNER_GUIDE.md](docs/PLANNER_GUIDE.md) (문구 수정, 이미지 교체, 실시간 미리보기 및 배포법)
+* 📋 **기획 명세서**: [docs/current_specs.md](docs/current_specs.md)
 
-- [프로젝트 요약](#프로젝트-요약)
-- [주요 기술 스택](#주요-기술-스택)
-- [시작하기](#시작하기)
-  - [사전 준비물](#사전-준비물)
-  - [설치 및 로컬 환경에서 실행하기](#설치-및-로컬-환경에서-실행하기)
-- [소스 코드 구조](#소스-코드-구조)
+---
 
-## 프로젝트 요약
+## 🚀 빠른 시작 (Quick Start)
 
-이 웹 애플리케이션은 OpenThe Share의 온라인 공식 창구 역할을 합니다. 회사의 비전, 제공하는 서비스, 성공적인 프로젝트 포트폴리오, 그리고 사회에 미친 긍정적인 영향 등을 잠재적인 기업 파트너에게 효과적으로 전달하는 것을 목표로 합니다. 사용자의 참여를 유도하는 인터랙티브한 섹션, 고객 후기, 그리고 명확한 파트너십 문의 채널을 제공하여 정보 제공과 비즈니스 기회 창출을 동시에 달성하도록 설계되었습니다.
+### 1. 개발 서버 실행 (실시간 미리보기)
+```bash
+npm install
+npm run dev
+```
 
-## 주요 기술 스택
+### 2. GitHub Pages 즉시 배포
+* **VS Code 단축키**: `Ctrl + Shift + B` (자동 빌드 후 배포)
+* **스크립트 더블클릭**: 프로젝트 루트의 `deploy.bat` 실행
+* **터미널 명령어**:
+  ```bash
+  npm run deploy   # 빌드 후 gh-pages 브랜치로 배포
+  npm run ship     # 배포 + Git 변경사항 자동 커밋/푸시
+  ```
 
-- **프레임워크:** [React](https://reactjs.org/)
-- **언어:** [TypeScript](https://www.typescriptlang.org/)
-- **스타일링:** [Tailwind CSS](https://tailwindcss.com/)
-- **빌드 도구:** [Vite](https://vitejs.dev/)
+---
 
-## 시작하기
-
-아래의 안내에 따라 프로젝트를 로컬 컴퓨터에 복제하고, 개발 및 테스트를 위해 실행할 수 있습니다.
-
-### 사전 준비물
-
-이 프로젝트를 실행하기 위해서는 [Node.js](https://nodejs.org/) (버전 18.x 이상 권장)와 [npm](https://www.npmjs.com/)이 컴퓨터에 설치되어 있어야 합니다.
-
-### 설치 및 로컬 환경에서 실행하기
-
-1.  **의존성 패키지 설치:**
-    아래 명령어를 실행하여 `package.json` 파일에 정의된 모든 필수 라이브러리를 설치합니다.
-    ```bash
-    npm install
-    ```
-
-2.  **개발 서버 실행:**
-    이 명령어는 Vite 개발 서버를 시작합니다. 일반적으로 `http://localhost:5173` 주소로 서버가 열립니다.
-    ```bash
-    npm run dev
-    ```
-
-3.  **브라우저에서 확인:**
-    웹 브라우저를 열고 `http://localhost:5173` 주소로 이동하면 실행 중인 애플리케이션을 확인할 수 있습니다.
-
-## 소스 코드 구조
-
-이 프로젝트는 코드의 모듈성, 재사용성, 그리고 유지보수성을 극대화하기 위해 컴포넌트 기반 아키텍처를 채택했습니다.
+## 📂 소스 코드 구조
 
 ```
 /
+├── .github/workflows/   # GitHub Actions 자동 배포 워크플로우
+├── .vscode/             # VS Code 작업(Task), MCP 설정
+├── docs/                # 기획 문서 및 기획자용 작업 가이드
+│   ├── current_specs.md # 최신 기획 명세서
+│   └── PLANNER_GUIDE.md # 기획자/비개발자 소스 수정 & 배포 가이드
 ├── src/
-│   ├── components/      # 재사용 가능한 모든 React 컴포넌트
-│   │   ├── forms/       # 폼(입력 양식) 관련 컴포넌트
-│   │   ├── layout/      # 페이지의 전체 레이아웃을 구성하는 컴포넌트 (헤더, 푸터 등)
-│   │   ├── modals/      # 모달(팝업) 창 컴포넌트
-│   │   ├── sections/    # 페이지를 구성하는 각 콘텐츠 섹션 (소개, 포트폴리오 등)
-│   │   └── ui/          # 범용적으로 사용되는 UI 요소 (모달 래퍼 등)
-│   ├── data/            # 애플리케이션에서 사용하는 정적(mock) 데이터
-│   ├── hooks/           # 재사용 가능한 로직을 담은 커스텀 React 훅
-│   ├── App.tsx          # 애플리케이션의 최상위 컴포넌트, 전역 상태 관리
-│   ├── index.css        # 전역 스타일 및 Tailwind CSS 설정
-│   ├── main.tsx         # React 애플리케이션의 진입점
-│   └── types.ts         # TypeScript 타입 정의 파일
-├── index.html           # 애플리케이션의 기본 HTML 템플릿 파일
-├── package.json         # 프로젝트 의존성 및 스크립트 정의
-├── tailwind.config.js   # Tailwind CSS 설정 파일
-├── postcss.config.js    # PostCSS 설정 파일
-├── tsconfig.json        # TypeScript 컴파일러 설정 파일
-└── README.md            # 현재 이 파일
+│   ├── components/      # React 컴포넌트 (sections, modals, layout, ui)
+│   ├── data/            # 텍스트, FAQ, 포트폴리오 등 정적 데이터 (mockData.ts)
+│   ├── hooks/           # 커스텀 훅
+│   └── types.ts         # TypeScript 타입 정의
+├── deploy.bat           # 원클릭 빌드 & 배포 배치파일
+├── package.json         # 의존성 및 스크립트 정의
+└── vite.config.ts       # Vite 번들러 설정
 ```
