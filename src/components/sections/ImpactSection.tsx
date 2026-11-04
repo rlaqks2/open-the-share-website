@@ -1,25 +1,38 @@
 /**
  * @file ImpactSection.tsx
- * @description 회사의 '핵심 성과'를 시각적으로 강조하여 보여주는 섹션 컴포넌트입니다.
- * 누적 파트너사, 총 참여 임직원 등 중요한 통계 데이터를
- * 명확하고 인상적인 숫자 카드 형태로 표시하여 회사의 성과와 영향력을 전달합니다.
- * 데이터는 `mockData` 파일에서 가져와 동적으로 렌더링합니다.
+ * @description 오픈더쉐어의 실제 포트폴리오 및 참여기관 파트너십 성과를 보여주는 섹션입니다.
  */
 import React from 'react';
 import { mockData } from '../../data/mockData';
 
 const ImpactSection: React.FC = () => {
     return (
-        <section id="impact" className="py-20 bg-pattern">
-            <div className="max-w-7xl mx-auto px-4 text-center">
-                <h2 className="text-3xl font-bold mb-2">핵심 성과</h2>
-                <p className="text-slate-600 mb-12">숫자로 증명하는 오픈더쉐어의 임팩트</p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                    {/* mockData.impactStats 배열을 순회하며 각 통계 데이터를 카드로 렌더링 */}
-                    {mockData.impactStats.map(stat => (
-                        <div key={stat.id} className="bg-white p-8 rounded-2xl shadow-lg">
-                            <p className="text-4xl font-extrabold text-emerald-600 mb-2">{stat.value}</p>
-                            <p className="font-semibold text-slate-700">{stat.label}</p>
+        <section id="impact" className="py-20 bg-emerald-900 text-white">
+            <div className="max-w-7xl mx-auto px-4">
+                <div className="text-center mb-12">
+                    <span className="inline-block px-3.5 py-1 rounded-full bg-emerald-800 text-emerald-200 text-xs font-extrabold mb-3">
+                        SOCIAL IMPACT DATA
+                    </span>
+                    <h2 className="text-3xl md:text-4xl font-black mb-2 break-keep">
+                        숫자로 보는 오픈더쉐어의 임팩트
+                    </h2>
+                    <p className="text-emerald-200 text-sm md:text-base break-keep">
+                        공식 홈페이지 및 블로그에 기록된 기업·단체 사회공헌 캠페인 및 참여기관 데이터입니다.
+                    </p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {mockData.impactStats.map((stat) => (
+                        <div
+                            key={stat.id}
+                            className="bg-white/10 backdrop-blur-sm border border-white/15 p-7 rounded-3xl text-center hover:bg-white/15 transition-colors min-w-0"
+                        >
+                            <p className="text-4xl md:text-5xl font-black text-amber-300 mb-2 whitespace-nowrap">
+                                {stat.value}
+                            </p>
+                            <p className="font-extrabold text-white text-base sm:text-lg mb-1 break-keep">
+                                {stat.label}
+                            </p>
+                            {stat.sub && <p className="text-xs text-emerald-200 break-keep">{stat.sub}</p>}
                         </div>
                     ))}
                 </div>

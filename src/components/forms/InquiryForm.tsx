@@ -1,110 +1,246 @@
 /**
  * @file InquiryForm.tsx
- * @description '파트너십 문의'를 위한 상세 입력 폼 컴포넌트입니다.
- * 회사명, 담당자 정보, 연락처, 문의 내용 등 사용자의 입력을 처리합니다.
- * 모든 필수 필드가 채워졌는지 유효성을 검사하고,
- * 제출 시 부모 컴포넌트로부터 받은 `onSubmitted` 콜백 함수를 호출합니다.
+ * @description openthe.kr/yc/sub/sub3_2.php의 온라인 상담 신청 양식을 반영한 파트너십 문의 폼 컴포넌트입니다.
+ * 단체 유형(기업/관공서/학교/기타), 희망 방식(대면 온앤온 / 비대면 온팅), 예상 인원 등을 포함하며,
+ * 브라우저 기본 alert() 대신 인라인 상태 메시지를 사용하여 보안 및 UX 가이드라인을 준수합니다.
  */
 import React, { useState } from 'react';
 import emailjs from '@emailjs/browser';
 
-// InquiryForm 컴포넌트가 받는 props의 타입을 정의
 interface InquiryFormProps {
-  onSubmitted: () => void; // 폼 제출이 성공적으로 완료되었을 때 호출될 함수
-  onError?: () => void; // 폼 제출 실패 시 호출될 함수
+    onSubmitted: () => void;
+    onError?: () => void;
 }
 
 const InquiryForm: React.FC<InquiryFormProps> = ({ onSubmitted, onError }) => {
-  // 폼의 각 필드 값을 관리하는 state
-  const [form, setForm] = useState({
-    company: '',
-    manager: '',
-    title: '',
-    phone: '',
-    email: '',
-    message: '',
-    agree: false,
-  });
+    const [form, setForm] = useState({
+        orgCategory: '기업',
+        programType: '온앤온 (대면 사회공헌)',
+        company: '',
+        manager: '',
+        title: '',
+        phone: '',
+        email: '',
+        participants: '',
+        message: '',
+        agree: false,
+    });
 
-  // 입력 필드의 값이 변경될 때마다 form state를 업데이트하는 함수
-  const set = (key: string, value: string | boolean) => setForm(prev => ({ ...prev, [key]: value }));
+    const [validationError, setValidationError] = useState<string | null>(null);
+    const [isSending, setIsSending] = useState(false);
 
-  // 폼 제출 이벤트 핸들러
-  const onSubmit = (e: React.FormEvent) => {
-    e.preventDefault(); // 폼 제출 시 페이지가 새로고침되는 기본 동작을 막음
-
-    // 필수 항목 유효성 검사
-    if (!form.company || !form.manager || !form.phone || !form.email || !form.agree) {
-      alert('필수 항목을 모두 입력해주세요.');
-      return;
-    }
-
-    // EmailJS 서비스 설정 값 (EmailJS 대시보드에서 확인 가능)
-    // TODO: 아래 값들을 실제 EmailJS 계정의 값으로 교체해야 합니다.
-    const SERVICE_ID = "service_49uwd6l";
-    const TEMPLATE_ID = "template_pm65did";
-    const PUBLIC_KEY = "vShddPvGInIVoVMuQ";
-
-    // 템플릿 파라미터 준비 (EmailJS 템플릿 변수명과 일치시켜야 함)
-    const templateParams = {
-      to_email: 'rlaqks2@gmail.com', // 이 이메일로 문의 내용이 도착합니다. (EmailJS 템플릿 설정 필요)
-      from_name: form.manager,
-      from_company: form.company,
-      from_email: form.email,
-      phone: form.phone,
-      title: form.title,
-      message: form.message,
+    const set = (key: string, value: string | boolean) => {
+        setValidationError(null);
+        setForm((prev) => ({ ...prev, [key]: value }));
     };
 
-    // EmailJS로 이메일 전송
-    // EmailJS로 이메일 전송
-    emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY)
-      .then(() => {
-        onSubmitted();
-      }, (err) => {
-        console.error(err);
-        if (onError) onError();
-        else alert('이메일 전송에 실패했습니다. 다시 시도해주세요.');
-      });
-  };
+    const onSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
 
-  return (
-    <form onSubmit={onSubmit} className="grid grid-cols-1 gap-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="company" className="block text-sm font-medium text-slate-700">회사명<span className="text-rose-500">*</span></label>
-          <input id="company" value={form.company} onChange={e => set('company', e.target.value)} required className="mt-1 w-full rounded-lg border-slate-300 px-3 py-2 focus:ring-emerald-500 focus:border-emerald-500" autoComplete="organization" />
-        </div>
-        <div>
-          <label htmlFor="manager" className="block text-sm font-medium text-slate-700">담당자<span className="text-rose-500">*</span></label>
-          <input id="manager" value={form.manager} onChange={e => set('manager', e.target.value)} required className="mt-1 w-full rounded-lg border-slate-300 px-3 py-2 focus:ring-emerald-500 focus:border-emerald-500" autoComplete="name" />
-        </div>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="title" className="block text-sm font-medium text-slate-700">직책</label>
-          <input id="title" value={form.title} onChange={e => set('title', e.target.value)} className="mt-1 w-full rounded-lg border-slate-300 px-3 py-2 focus:ring-emerald-500 focus:border-emerald-500" autoComplete="organization-title" />
-        </div>
-        <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-slate-700">연락처<span className="text-rose-500">*</span></label>
-          <input id="phone" type="tel" value={form.phone} onChange={e => set('phone', e.target.value)} placeholder="010-0000-0000" required className="mt-1 w-full rounded-lg border-slate-300 px-3 py-2 focus:ring-emerald-500 focus:border-emerald-500" autoComplete="tel" />
-        </div>
-      </div>
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-slate-700">이메일<span className="text-rose-500">*</span></label>
-        <input id="email" type="email" value={form.email} onChange={e => set('email', e.target.value)} placeholder="name@example.com" required className="mt-1 w-full rounded-lg border-slate-300 px-3 py-2 focus:ring-emerald-500 focus:border-emerald-500" autoComplete="email" />
-      </div>
-      <div>
-        <label htmlFor="message" className="block text-sm font-medium text-slate-700">문의 내용</label>
-        <textarea id="message" value={form.message} onChange={e => set('message', e.target.value)} rows={4} placeholder="원하시는 프로그램, 참여 인원, 시기 등" className="mt-1 w-full rounded-lg border-slate-300 px-3 py-2 focus:ring-emerald-500 focus:border-emerald-500" />
-      </div>
-      <div className="flex items-center gap-2 text-sm">
-        <input id="agree" type="checkbox" checked={form.agree} onChange={e => set('agree', e.target.checked)} required className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" />
-        <label htmlFor="agree" className="text-slate-600">개인정보 수집·이용에 동의합니다.</label>
-      </div>
-      <button type="submit" className="mt-2 w-full rounded-lg bg-emerald-600 px-4 py-3 text-base font-semibold text-white hover:bg-emerald-700 transition-colors">문의 제출</button>
-    </form>
-  );
-}
+        if (!form.company.trim() || !form.manager.trim() || !form.phone.trim() || !form.email.trim()) {
+            setValidationError('기업/단체명, 담당자명, 연락처, 이메일을 모두 입력해 주세요.');
+            return;
+        }
+
+        if (!form.agree) {
+            setValidationError('개인정보 수집 및 이용에 동의해 주세요.');
+            return;
+        }
+
+        setIsSending(true);
+
+        const SERVICE_ID = 'service_49uwd6l';
+        const TEMPLATE_ID = 'template_pm65did';
+        const PUBLIC_KEY = 'vShddPvGInIVoVMuQ';
+
+        const templateParams = {
+            to_email: 'opentheshare@naver.com',
+            from_name: form.manager,
+            from_company: `[${form.orgCategory}] ${form.company}`,
+            from_email: form.email,
+            phone: form.phone,
+            title: `${form.title} (${form.programType} / 예상인원: ${form.participants || '미정'})`,
+            message: form.message,
+        };
+
+        emailjs
+            .send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY)
+            .then(() => {
+                setIsSending(false);
+                onSubmitted();
+            })
+            .catch(() => {
+                setIsSending(false);
+                if (onError) {
+                    onError();
+                } else {
+                    setValidationError(
+                        '문의 접수 중 일시적인 네트워크 오류가 발생했습니다. 대표전화(031-8039-7034) 또는 이메일(opentheshare@naver.com)로 연락 부탁드립니다.'
+                    );
+                }
+            });
+    };
+
+    return (
+        <form onSubmit={onSubmit} className="grid grid-cols-1 gap-4 text-left">
+            {validationError && (
+                <div
+                    role="alert"
+                    className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold"
+                >
+                    {validationError}
+                </div>
+            )}
+
+            {/* 단체 분류 & 희망 프로그램 */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label htmlFor="orgCategory" className="block text-xs font-bold text-slate-700 mb-1">
+                        기업 · 단체 유형 <span className="text-rose-500">*</span>
+                    </label>
+                    <select
+                        id="orgCategory"
+                        value={form.orgCategory}
+                        onChange={(e) => set('orgCategory', e.target.value)}
+                        className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    >
+                        <option value="기업">기업 (대기업·중견·강소기업)</option>
+                        <option value="공공기관·재단">관공서 · 공공기관 · 재단</option>
+                        <option value="학교·교육기관">학교 · 대학교 · 교육기관</option>
+                        <option value="단체·기타">협회 · 단체 · 기타</option>
+                    </select>
+                </div>
+                <div>
+                    <label htmlFor="programType" className="block text-xs font-bold text-slate-700 mb-1">
+                        희망 프로그램 방식 <span className="text-rose-500">*</span>
+                    </label>
+                    <select
+                        id="programType"
+                        value={form.programType}
+                        onChange={(e) => set('programType', e.target.value)}
+                        className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    >
+                        <option value="온앤온 (대면 사회공헌)">온앤온 ON&amp;ON (대면 봉사활동)</option>
+                        <option value="온팅 (비대면 사회공헌)">온팅 ON-ting (비대면·기부키트 봉사)</option>
+                        <option value="대면+비대면 복합 컨설팅">대면 + 비대면 맞춤형 컨설팅</option>
+                    </select>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label htmlFor="company" className="block text-xs font-bold text-slate-700 mb-1">
+                        기업 · 단체명 <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                        id="company"
+                        value={form.company}
+                        onChange={(e) => set('company', e.target.value)}
+                        required
+                        placeholder="예: (주)오픈더쉐어"
+                        className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                        autoComplete="organization"
+                    />
+                </div>
+                <div>
+                    <label htmlFor="manager" className="block text-xs font-bold text-slate-700 mb-1">
+                        담당자 성함 / 직책 <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                        id="manager"
+                        value={form.manager}
+                        onChange={(e) => set('manager', e.target.value)}
+                        required
+                        placeholder="예: 홍길동 매니저"
+                        className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                        autoComplete="name"
+                    />
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label htmlFor="phone" className="block text-xs font-bold text-slate-700 mb-1">
+                        연락처 <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                        id="phone"
+                        type="tel"
+                        value={form.phone}
+                        onChange={(e) => set('phone', e.target.value)}
+                        placeholder="010-0000-0000"
+                        required
+                        className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                        autoComplete="tel"
+                    />
+                </div>
+                <div>
+                    <label htmlFor="email" className="block text-xs font-bold text-slate-700 mb-1">
+                        이메일 <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                        id="email"
+                        type="email"
+                        value={form.email}
+                        onChange={(e) => set('email', e.target.value)}
+                        placeholder="name@company.com"
+                        required
+                        className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                        autoComplete="email"
+                    />
+                </div>
+            </div>
+
+            <div>
+                <label htmlFor="participants" className="block text-xs font-bold text-slate-700 mb-1">
+                    예상 참여 인원 및 희망 시기
+                </label>
+                <input
+                    id="participants"
+                    value={form.participants}
+                    onChange={(e) => set('participants', e.target.value)}
+                    placeholder="예: 임직원 약 40명 / 2026년 5월 중 희망"
+                    className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                />
+            </div>
+
+            <div>
+                <label htmlFor="message" className="block text-xs font-bold text-slate-700 mb-1">
+                    상세 문의 내용
+                </label>
+                <textarea
+                    id="message"
+                    value={form.message}
+                    onChange={(e) => set('message', e.target.value)}
+                    rows={3}
+                    placeholder="관심 있는 테마(환경·업사이클링, 목공, 벽화, 요리·베이킹, 기부키트 등)나 예산, 궁금하신 점을 자유롭게 남겨주세요."
+                    className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                />
+            </div>
+
+            <div className="flex items-center gap-2 text-xs">
+                <input
+                    id="agree"
+                    type="checkbox"
+                    checked={form.agree}
+                    onChange={(e) => set('agree', e.target.checked)}
+                    required
+                    className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                />
+                <label htmlFor="agree" className="text-slate-600 font-medium">
+                    개인정보 수집 및 이용(상담 회신 목적)에 동의합니다.
+                </label>
+            </div>
+
+            <button
+                type="submit"
+                disabled={isSending}
+                className="mt-1 w-full rounded-xl bg-emerald-600 px-4 py-3.5 text-sm font-extrabold text-white hover:bg-emerald-700 transition-colors disabled:opacity-60"
+            >
+                {isSending ? '문의 접수 중...' : '맞춤형 사회공헌 상담 신청하기'}
+            </button>
+        </form>
+    );
+};
 
 export default InquiryForm;
