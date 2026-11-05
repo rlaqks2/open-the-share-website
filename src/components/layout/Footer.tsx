@@ -11,9 +11,10 @@ import footerLogoImg from '../../assets/footer_logo.png';
 interface FooterProps {
     onNavigateHome?: (sectionId?: string) => void;
     onNavigatePortfolio?: () => void;
+    onOpenVisitorLog?: () => void;
 }
 
-const Footer: React.FC<FooterProps> = ({ onNavigateHome, onNavigatePortfolio }) => {
+const Footer: React.FC<FooterProps> = ({ onNavigateHome, onNavigatePortfolio, onOpenVisitorLog }) => {
     const { companyInfo, partners, portfolioItems } = mockData;
 
     return (
@@ -149,9 +150,19 @@ const Footer: React.FC<FooterProps> = ({ onNavigateHome, onNavigatePortfolio }) 
                             {companyInfo.email}
                         </p>
                     </div>
-                    <p className="text-xs text-slate-500 whitespace-nowrap shrink-0">
-                        &copy; {new Date().getFullYear()} OPEN THE SHARE Inc. All Rights Reserved.
-                    </p>
+                    <div className="flex items-center gap-4 text-xs text-slate-500 whitespace-nowrap shrink-0">
+                        <span>&copy; {new Date().getFullYear()} OPEN THE SHARE Inc. All Rights Reserved.</span>
+                        {onOpenVisitorLog && (
+                            <button
+                                onClick={onOpenVisitorLog}
+                                className="text-slate-500 hover:text-emerald-400 transition-colors flex items-center gap-1 text-[11px] px-2 py-0.5 rounded border border-slate-800 hover:border-slate-700 bg-slate-900/60"
+                                title="실시간 사이트 방문자 로그 및 통계 (단축키: Ctrl+Shift+L)"
+                            >
+                                <span>📊</span>
+                                <span>방문자 로그</span>
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
         </footer>
