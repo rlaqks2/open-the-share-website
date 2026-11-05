@@ -55,11 +55,13 @@ const PortfolioPage: React.FC<PortfolioPageProps> = ({
         setCurrentPage(1);
     }, [orgFilter, categoryFilter, yearFilter, searchQuery, itemsPerPage]);
 
+    const isOTSItem = (item: PortfolioItem) => item.period >= '2025.01.01';
+
     const stats = useMemo(() => {
         const items = mockData.portfolioItems;
         const corpCount = items.filter((i) => i.orgType === '기업봉사').length;
         const groupCount = items.filter((i) => i.orgType === '단체봉사').length;
-        const otsCount = items.filter((i) => i.id <= 21).length;
+        const otsCount = items.filter(isOTSItem).length;
         return {
             total: items.length,
             corpCount,
@@ -69,9 +71,9 @@ const PortfolioPage: React.FC<PortfolioPageProps> = ({
     }, []);
 
     const filteredItems = useMemo(() => {
-        return mockData.portfolioItems.filter((item) => {
+        const list = mockData.portfolioItems.filter((item) => {
             if (orgFilter === 'ots') {
-                if (item.id > 21) return false;
+                if (!isOTSItem(item)) return false;
             } else if (orgFilter !== 'all') {
                 if (item.orgType !== orgFilter) return false;
             }
@@ -95,6 +97,9 @@ const PortfolioPage: React.FC<PortfolioPageProps> = ({
 
             return true;
         });
+
+        // 항상 최신 일자(period) 기준 내림차순 정렬 (최신 활동이 항상 상단에 노출되도록 보장)
+        return [...list].sort((a, b) => b.period.localeCompare(a.period));
     }, [orgFilter, categoryFilter, yearFilter, searchQuery]);
 
     const totalPages = Math.max(1, Math.ceil(filteredItems.length / itemsPerPage));
@@ -386,7 +391,7 @@ const PortfolioPage: React.FC<PortfolioPageProps> = ({
                                         >
                                             {item.orgType}
                                         </span>
-                                        {item.id <= 21 && (
+                                        {isOTSItem(item) && (
                                             <span className="text-[11px] font-extrabold px-2.5 py-1 rounded-full bg-rose-500/95 text-white shadow-sm whitespace-nowrap">
                                                 OPEN THE SHARE
                                             </span>

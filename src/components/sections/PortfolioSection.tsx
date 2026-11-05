@@ -13,15 +13,10 @@ interface PortfolioSectionProps {
     onViewAllClick: (initialFilter?: string) => void;
 }
 
-const ORG_TABS: { key: string; label: string; badge: string }[] = [
-    { key: 'all', label: '전체 스토리', badge: '97' },
-    { key: 'ots', label: 'OPEN THE SHARE 최신', badge: '21' },
-    { key: '기업봉사', label: '기업 CSR · ESG 봉사', badge: '기업' },
-    { key: '단체봉사', label: '공공기관 · 대학 · 단체봉사', badge: '단체' },
-];
+const isOTSItem = (item: PortfolioItem) => item.period >= '2025.01.01';
 
 const getOrgBadgeStyle = (item: PortfolioItem) => {
-    if (item.id <= 21) {
+    if (isOTSItem(item)) {
         return 'bg-emerald-600 text-white';
     }
     return item.orgType === '기업봉사'
@@ -50,14 +45,28 @@ const PortfolioSection: React.FC<PortfolioSectionProps> = ({
 }) => {
     const [activeTab, setActiveTab] = useState<string>('all');
 
+    const totalCount = mockData.portfolioItems.length;
+    const otsCount = useMemo(() => mockData.portfolioItems.filter(isOTSItem).length, []);
+
+    const orgTabs = useMemo(() => [
+        { key: 'all', label: '전체 스토리', badge: String(totalCount) },
+        { key: 'ots', label: 'OPEN THE SHARE 최신', badge: String(otsCount) },
+        { key: '기업봉사', label: '기업 CSR · ESG 봉사', badge: '기업' },
+        { key: '단체봉사', label: '공공기관 · 대학 · 단체봉사', badge: '단체' },
+    ], [totalCount, otsCount]);
+
     const filteredList = useMemo(() => {
-        if (activeTab === 'all') return mockData.portfolioItems;
-        if (activeTab === 'ots') return mockData.portfolioItems.filter((item) => item.id <= 21);
-        return mockData.portfolioItems.filter((item) => item.orgType === activeTab);
+        let list = mockData.portfolioItems;
+        if (activeTab === 'ots') {
+            list = list.filter(isOTSItem);
+        } else if (activeTab !== 'all') {
+            list = list.filter((item) => item.orgType === activeTab);
+        }
+        // 항상 최신 일자(period) 기준 내림차순 정렬
+        return [...list].sort((a, b) => b.period.localeCompare(a.period));
     }, [activeTab]);
 
     const previewItems = useMemo(() => filteredList.slice(0, 6), [filteredList]);
-    const totalCount = filteredList.length;
 
     return (
         <section id="portfolio" className="py-24 bg-[#F8FAF9]">
@@ -73,14 +82,14 @@ const PortfolioSection: React.FC<PortfolioSectionProps> = ({
                             참여기관과 함께 만든 <span className="text-emerald-600">나눔 스토리</span>
                         </h2>
                         <p className="text-slate-600 mt-2 text-base md:text-lg break-keep">
-                            오픈더쉐어(OPEN THE SHARE) 및 기업·단체가 직접 참여한 {mockData.portfolioItems.length}건의 실제 사회공헌 현장 기록입니다.
+                            오픈더쉐어(OPEN THE SHARE) 및 기업·단체가 직접 참여한 {totalCount}건의 실제 사회공헌 현장 기록입니다.
                         </p>
                     </div>
                     <button
                         onClick={() => onViewAllClick(activeTab)}
                         className="self-start md:self-auto inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-slate-900 text-white text-sm font-bold hover:bg-emerald-600 transition-colors shadow-sm whitespace-nowrap shrink-0"
                     >
-                        <span>포트폴리오 전체보기 ({mockData.portfolioItems.length}건)</span>
+                        <span>포트폴리오 전체보기 ({totalCount}건)</span>
                         <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
                         </svg>
@@ -89,7 +98,7 @@ const PortfolioSection: React.FC<PortfolioSectionProps> = ({
 
                 {/* 분류 필터 탭 */}
                 <div className="flex flex-wrap items-center gap-2.5 mb-10">
-                    {ORG_TABS.map((tab) => {
+                    {orgTabs.map((tab) => {
                         const isActive = activeTab === tab.key;
                         return (
                             <button
@@ -134,7 +143,7 @@ const PortfolioSection: React.FC<PortfolioSectionProps> = ({
 
                                 {/* 좌측 상단 구분 배지 */}
                                 <div className="absolute top-3.5 left-3.5 flex flex-wrap items-center gap-1.5 pr-3">
-                                    {item.id <= 21 && (
+                                    {isOTSItem(item) && (
                                         <span className="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-emerald-600 text-white shadow-sm whitespace-nowrap">
                                             OPEN THE SHARE
                                         </span>
@@ -164,71 +173,59 @@ const PortfolioSection: React.FC<PortfolioSectionProps> = ({
                                 )}
                             </div>
 
-                            {/* 카드 본문 */}
-                            <div className="p-6 flex flex-col flex-grow min-w-0">
-                                {/* 카테고리 및 날짜 */}
-                                <div className="flex items-center justify-between gap-2 mb-3">
-                                    <span
-                                        className={`text-xs font-bold px-2.5 py-1 rounded-md border whitespace-nowrap ${getCategoryPillStyle(
-                                            item.category
-                                        )}`}
-                                    >
-                                        {item.category}
-                                    </span>
-                                    <span className="text-xs text-slate-400 font-medium whitespace-nowrap shrink-0">
-                                        {item.period}
-                                    </span>
-                                </div>
-
-                                {/* 제목 */}
-                                <h3 className="text-lg font-bold text-slate-900 group-hover:text-emerald-600 transition-colors line-clamp-2 mb-2.5 leading-snug break-keep">
-                                    {item.title}
-                                </h3>
-
-                                {/* 본문 요약 */}
-                                <p className="text-sm text-slate-500 line-clamp-2 mb-5 leading-relaxed flex-grow break-keep">
-                                    {item.story}
-                                </p>
-
-                                {/* 하단 파트너 & 더보기 */}
-                                <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3 text-xs min-w-0">
-                                    <div className="flex items-center gap-2 min-w-0 flex-1">
-                                        <span className="w-6 h-6 rounded-full bg-emerald-50 text-emerald-700 font-bold flex items-center justify-center shrink-0">
-                                            🤝
+                            {/* 카드 본문 콘텐츠 */}
+                            <div className="p-6 flex-1 flex flex-col justify-between">
+                                <div>
+                                    {/* 상단 메타 (테마 칩 + 진행일자) */}
+                                    <div className="flex items-center justify-between gap-2 mb-3">
+                                        <span
+                                            className={`inline-block px-3 py-1 rounded-lg text-xs font-extrabold border whitespace-nowrap ${getCategoryPillStyle(
+                                                item.category
+                                            )}`}
+                                        >
+                                            {item.category}
                                         </span>
-                                        <span className="font-bold text-slate-700 truncate" title={item.partner}>
-                                            {item.partner}
+                                        <span className="text-xs font-semibold text-slate-600 tracking-tight whitespace-nowrap">
+                                            {item.period}
                                         </span>
                                     </div>
-                                    <span className="font-bold text-emerald-600 group-hover:translate-x-0.5 transition-transform whitespace-nowrap shrink-0">
-                                        스토리 보기 &rarr;
-                                    </span>
+
+                                    {/* 파트너명 */}
+                                    <p className="text-xs font-black text-emerald-800 tracking-wide uppercase mb-1 line-clamp-1 break-keep">
+                                        {item.partner}
+                                    </p>
+
+                                    {/* 활동 제목 */}
+                                    <h3 className="text-lg font-bold text-slate-900 leading-snug line-clamp-2 group-hover:text-emerald-600 transition-colors break-keep">
+                                        {item.title}
+                                    </h3>
+
+                                    {/* 활동 스토리 요약 */}
+                                    <p className="text-slate-600 text-xs sm:text-sm mt-2.5 line-clamp-2 leading-relaxed break-keep">
+                                        {item.story}
+                                    </p>
+                                </div>
+
+                                {/* 하단 자세히 보기 유도 */}
+                                <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-700 group-hover:text-emerald-800">
+                                    <span className="whitespace-nowrap">현장 스토리 & 갤러리</span>
+                                    <span className="group-hover:translate-x-1 transition-transform">&rarr;</span>
                                 </div>
                             </div>
                         </article>
                     ))}
                 </div>
 
-                {/* 하단 전체 페이지 이동 배너 */}
-                <div className="mt-12 bg-white rounded-3xl p-6 md:p-8 border border-emerald-100 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-                    <div className="flex items-start sm:items-center gap-4 min-w-0">
-                        <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl shrink-0">
-                            🌱
-                        </div>
-                        <div className="min-w-0">
-                            <h3 className="text-lg font-extrabold text-slate-900 break-keep">
-                                더 많은 기업·단체 봉사활동 사례가 궁금하신가요?
-                            </h3>
-                            <p className="text-sm text-slate-500 mt-0.5 break-keep">
-                                연도별, 테마별 검색과 페이지 넘김 기능이 제공되는 전용 포트폴리오 아카이브에서 총 {totalCount}건의 스토리를 확인해 보세요.
-                            </p>
-                        </div>
-                    </div>
+                {/* 하단 전체보기 유도 배너 */}
+                <div className="mt-14 text-center">
                     <button
                         onClick={() => onViewAllClick(activeTab)}
-                        className="w-full sm:w-auto shrink-0 whitespace-nowrap px-7 py-3.5 rounded-full bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-700 transition-colors shadow-sm"
+                        className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-white border-2 border-slate-900 text-slate-900 font-extrabold hover:bg-slate-900 hover:text-white transition-all shadow-sm hover:shadow-md text-sm md:text-base whitespace-nowrap"
                     >
-                        포트폴리오 전용 페이지 열기 &rarr;
+                        <span>참여기관 사회공헌 전체 포트폴리오 둘러보기 ({totalCount}건)</span>
+                        <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
                     </button>
                 </div>
             </div>

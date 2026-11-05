@@ -2581,3 +2581,6 @@ export const mockData = {
     }
   }
 };
+
+// 최신 일자(period) 기준 내림차순 정렬 (한국무라타전자 등 최신 활동 및 블로그 포스트가 항상 최상단에 노출)
+mockData.portfolioItems.sort((a, b) => b.period.localeCompare(a.period));
