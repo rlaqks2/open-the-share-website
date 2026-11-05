@@ -6,6 +6,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import logoImg from '../../assets/logo.png';
+import { mockData } from '../../data/mockData';
 
 interface HeaderProps {
     currentView: 'home' | 'portfolio';
@@ -33,6 +34,8 @@ const Header: React.FC<HeaderProps> = ({
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    const totalPortfolioCount = mockData.portfolioItems.length;
+
     const navLinks = [
         { name: '회사소개', sectionId: 'about', type: 'section' as const },
         { name: '사업안내', sectionId: 'programs', type: 'section' as const },
@@ -52,41 +55,43 @@ const Header: React.FC<HeaderProps> = ({
         }
     };
 
-    const solidHeader = isScrolled || currentView === 'portfolio';
-
     return (
         <header
-            className={`sticky top-0 z-40 w-full transition-all duration-300 ${
-                solidHeader
-                    ? 'bg-white/95 shadow-sm border-b border-slate-200/80 backdrop-blur-md'
-                    : 'bg-white/90 backdrop-blur-sm border-b border-slate-100'
+            className={`sticky top-0 z-40 transition-all duration-300 ${
+                isScrolled
+                    ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-slate-100 py-3'
+                    : 'bg-white border-b border-slate-100 py-4'
             }`}
         >
             <div className="max-w-7xl mx-auto px-4">
-                <div className="flex items-center justify-between gap-4 h-20">
-                    {/* 공식 원본 로고 (openthe.kr logo.png) */}
+                <div className="flex items-center justify-between gap-4">
+                    {/* 좌측 로고 영역 */}
                     <button
                         onClick={() => onNavigateHome()}
-                        className="flex items-center shrink-0 text-left group focus:outline-none"
-                        aria-label="오픈더쉐어 홈으로 이동"
+                        className="flex items-center gap-3 text-left focus:outline-none shrink-0 group"
                     >
                         <img
                             src={logoImg}
-                            alt="Open The Share 오픈더쉐어 공식 로고"
-                            className="h-8 sm:h-9 w-auto object-contain"
+                            alt="(주)오픈더쉐어 로고"
+                            className="h-9 md:h-10 w-auto object-contain transition-transform group-hover:scale-102"
                         />
                     </button>
 
-                    {/* 데스크톱 네비게이션 (줄바꿈 및 밀림 방지 적용) */}
-                    <nav className="hidden lg:flex items-center gap-5 xl:gap-7">
+                    {/* 중앙 네비게이션 메뉴 (데스크톱) */}
+                    <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
                         {navLinks.map((link) => {
-                            const isPortfolioPage = link.type === 'page' && currentView === 'portfolio';
+                            const isCurrent =
+                                (link.type === 'page' && currentView === 'portfolio') ||
+                                (link.type === 'section' && currentView === 'home');
+
                             return (
                                 <button
                                     key={link.name}
                                     onClick={() => handleNavClick(link)}
-                                    className={`text-sm font-bold transition-colors flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
-                                        isPortfolioPage
+                                    className={`px-3.5 py-2 rounded-full text-sm font-bold transition-colors inline-flex items-center gap-1.5 whitespace-nowrap ${
+                                        link.type === 'page' && currentView === 'portfolio'
+                                            ? 'text-emerald-600 bg-emerald-50'
+                                            : isCurrent
                                             ? 'text-emerald-600'
                                             : 'text-slate-700 hover:text-emerald-600'
                                     }`}
@@ -94,7 +99,7 @@ const Header: React.FC<HeaderProps> = ({
                                     <span>{link.name}</span>
                                     {link.type === 'page' && (
                                         <span className="px-1.5 py-0.5 text-[10px] font-extrabold rounded-full bg-emerald-100 text-emerald-700">
-                                            97
+                                            {totalPortfolioCount}
                                         </span>
                                     )}
                                 </button>
@@ -158,7 +163,7 @@ const Header: React.FC<HeaderProps> = ({
                                 <span>{link.name}</span>
                                 {link.type === 'page' && (
                                     <span className="px-2 py-0.5 text-xs font-extrabold rounded-full bg-emerald-100 text-emerald-700 shrink-0">
-                                        97건 전체보기
+                                        {totalPortfolioCount}건 전체보기
                                     </span>
                                 )}
                             </button>
