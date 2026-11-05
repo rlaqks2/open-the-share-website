@@ -32,7 +32,7 @@ const CATEGORY_CHIPS = [
     { id: '지역사회 나눔', label: '지역사회 나눔', icon: '💛' },
 ];
 
-const YEARS = ['all', '2026', '2025', '2024', '2023'];
+// 진행 연도 목록은 포트폴리오 데이터에서 동적 추출
 
 const PortfolioPage: React.FC<PortfolioPageProps> = ({
     onPortfolioItemClick,
@@ -56,6 +56,11 @@ const PortfolioPage: React.FC<PortfolioPageProps> = ({
     }, [orgFilter, categoryFilter, yearFilter, searchQuery, itemsPerPage]);
 
     const isOTSItem = (item: PortfolioItem) => item.period >= '2025.01.01';
+
+    const availableYears = useMemo(() => {
+        const yearsSet = new Set<string>(mockData.portfolioItems.map((item) => item.year || item.period.slice(0, 4)));
+        return Array.from(yearsSet).sort((a, b) => b.localeCompare(a));
+    }, []);
 
     const stats = useMemo(() => {
         const items = mockData.portfolioItems;
@@ -305,7 +310,7 @@ const PortfolioPage: React.FC<PortfolioPageProps> = ({
                                 className="text-xs md:text-sm font-semibold rounded-xl border border-slate-200 bg-slate-50 py-2 pl-3 pr-8 text-slate-700 focus:border-emerald-500 focus:ring-emerald-500"
                             >
                                 <option value="all">전체 연도</option>
-                                {YEARS.filter((y) => y !== 'all').map((y) => (
+                                {availableYears.map((y) => (
                                     <option key={y} value={y}>
                                         {y}년 활동
                                     </option>
@@ -532,7 +537,7 @@ const PortfolioPage: React.FC<PortfolioPageProps> = ({
                             파트너십 문의하기
                         </button>
                         <a
-                            href="https://blog.naver.com/5penthe"
+                            href={mockData.companyInfo.socials.blog}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="bg-white/10 hover:bg-white/20 text-white font-bold px-6 py-3.5 rounded-full transition-colors text-sm md:text-base whitespace-nowrap"

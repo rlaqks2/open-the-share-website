@@ -2,11 +2,12 @@
 @file sync_blog.py
 @description 네이버 공식 블로그(https://blog.naver.com/5penthe)에서 새로운 글을 탐지하여
 오픈더쉐어 관련 포트폴리오(기업/단체 사회공헌, 온앤온, 온팅, 과학교실, 업사이클링 등)만
-선별 수집하고, 썸네일 이미지를 다운로드한 뒤 src/data/mockData.ts에 자동 반영하는 스크립트입니다.
+선별 수집하고, 썸네일 이미지를 다운로드한 뒤 src/data/mockData.ts에 시간순 정렬하여 자동 반영하는 스크립트입니다.
 """
 
 import os
 import re
+import html
 import json
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -23,6 +24,8 @@ BLOG_USER = "5penthe"
 def clean_text(text: str) -> str:
     if not text:
         return ""
+    # 이중 이스케이프된 HTML 엔티티(&amp;quot;, &lsquo; 등) 완벽 복원
+    text = html.unescape(html.unescape(text))
     text = text.replace("삼奉사", "삼봉사")
     text = text.replace("溫&ON", "ON&ON").replace("溫ting", "ON-ting").replace("(溫)", "")
     text = re.sub(r"[\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff]", "", text)
@@ -40,17 +43,17 @@ def fetch_post_details(log_no: int):
     })
     try:
         with urllib.request.urlopen(req, timeout=12) as resp:
-            html = resp.read().decode("utf-8", errors="replace")
+            raw_html = resp.read().decode("utf-8", errors="replace")
     except Exception as e:
         print(f"Failed to fetch post {log_no}: {e}")
         return None
 
-    og_img = re.search(r'<meta\s+property=["\']og:image["\']\s+content=["\']([^"\']+)["\']', html)
-    og_title = re.search(r'<meta\s+property=["\']og:title["\']\s+content=["\']([^"\']+)["\']', html)
-    og_desc = re.search(r'<meta\s+property=["\']og:description["\']\s+content=["\']([^"\']+)["\']', html)
+    og_img = re.search(r'<meta\s+property=["\']og:image["\']\s+content=["\']([^"\']+)["\']', raw_html)
+    og_title = re.search(r'<meta\s+property=["\']og:title["\']\s+content=["\']([^"\']+)["\']', raw_html)
+    og_desc = re.search(r'<meta\s+property=["\']og:description["\']\s+content=["\']([^"\']+)["\']', raw_html)
 
     # 모든 블로그 본문 사진 URL 탐색 (갤러리용)
-    photos = re.findall(r'https://postfiles\.pstatic\.net/[^"\'\s)]+|https://blogfiles\.pstatic\.net/[^"\'\s)]+', html)
+    photos = re.findall(r'https://postfiles\.pstatic\.net/[^"\'\s)]+|https://blogfiles\.pstatic\.net/[^"\'\s)]+', raw_html)
     gallery = []
     seen = set()
     for p in photos:
@@ -78,7 +81,6 @@ def is_open_the_share_portfolio(title: str, category: str, desc: str) -> bool:
     블로그의 단순 센터 소식(취약계층 아동 후원모집, 내부 공지 등)은 제외하고,
     오픈더쉐어의 핵심 사회공헌(온앤온, 온팅, 기업/단체 봉사활동)만 수집합니다.
     """
-    # 1. 명확한 제외 카테고리 및 제목
     exclude_categories = ["새소식", "오픈더퓨처소식", "공지사항", "자원봉사모집"]
     if any(ex in category for ex in exclude_categories):
         return False
@@ -89,7 +91,6 @@ def is_open_the_share_portfolio(title: str, category: str, desc: str) -> bool:
 
     combined = f"{title} {category} {desc}"
     
-    # 2. 필수 매칭 키워드 (오픈더쉐어의 고유 활동)
     core_keywords = [
         "온앤온", "온팅", "사회공헌", "기업봉사", "단체봉사", "임직원 봉사", "원데이메이킹",
         "찾아가는 과학교실", "과학교실", "스페이스 업사이클링", "EM 흙공", "플로깅",
@@ -104,7 +105,7 @@ def determine_metadata(title: str, desc: str):
     group_keywords = ["학교", "중학교", "고등학교", "대학교", "RCY", "재단", "공공기관", "센터", "협회"]
     if any(k in title for k in group_keywords):
         org_type = "단체봉사"
-    elif any(k in title for k in ["기업", "임직원", "주식회사", "(주)", "회사"]):
+    elif any(k in title for k in ["기업", "임직원", "주식회사", "(주)", "회사", "전자", "생명", "화재", "케미칼", "제약"]):
         org_type = "기업봉사"
 
     # Category
@@ -118,23 +119,44 @@ def determine_metadata(title: str, desc: str):
     elif "김장" in title or "베이킹" in title or "나눔" in title:
         cat = "지역사회 나눔"
 
-    # Partner name heuristic
-    partner = "참여 파트너사"
-    m_with = re.search(r"([가-힣A-Za-z0-9·]+(?:전자|학교|대학교|재단|진흥원|회사|본부|지점|병원|그룹|FC|RCY))\s*(?:과|와|과 함께|와 함께)", title)
-    if m_with:
-        partner = m_with.group(1).strip()
-    else:
-        # Fallback from title prefix
-        parts = title.split(" ")
-        if len(parts) >= 2:
-            partner = parts[0].strip()
+    # 기관/파트너명 정밀 추출 (무의미한 첫 단어 추출 방지)
+    partner = "OPEN THE SHARE"
+    m_org = re.search(
+        r"([가-힣A-Za-z0-9·]+(?:전자|생명|화재|화재서비스|케미칼|제약|바이오|메디칼|시스템즈|모빌리티|이노베이션|중학교|고등학교|대학교\s*RCY|대\s*RCY|대학교|학교|재단|진흥원|연구원|공사|공단|협회|복지관|아동센터|병원|그룹|은행|증권))",
+        f"{title} {desc}"
+    )
+    if m_org:
+        partner = m_org.group(1).strip()
 
     return org_type, cat, partner
+
+def sort_mockdata_portfolio_items(mock_txt: str) -> str:
+    s_idx = mock_txt.find("  portfolioItems: [")
+    if s_idx == -1:
+        return mock_txt
+    e_idx = mock_txt.find("  ] as PortfolioItem[],", s_idx)
+    if e_idx == -1:
+        return mock_txt
+
+    header_part = mock_txt[:s_idx + len("  portfolioItems: [")]
+    body_part = mock_txt[s_idx + len("  portfolioItems: ["):e_idx]
+    footer_part = mock_txt[e_idx:]
+
+    item_blocks = re.findall(r"(\s*\{\s*id:\s*\d+[\s\S]*?\n\s*\})(?:,|\s*$)", body_part)
+    if not item_blocks:
+        return mock_txt
+
+    def get_period(block: str) -> str:
+        m = re.search(r'period:\s*"([^"]+)"', block)
+        return m.group(1) if m else "0000.00.00"
+
+    item_blocks_sorted = sorted(item_blocks, key=get_period, reverse=True)
+    new_body = ",\n".join(b.rstrip() for b in item_blocks_sorted) + "\n"
+    return header_part + "\n" + new_body + footer_part
 
 def main():
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Checking Naver Blog RSS feed...")
     
-    # 1. RSS 피드 조회
     req = urllib.request.Request(RSS_URL, headers={"User-Agent": "Mozilla/5.0"})
     try:
         with urllib.request.urlopen(req, timeout=15) as resp:
@@ -147,11 +169,10 @@ def main():
     items = root.findall(".//item")
     print(f"Found {len(items)} posts in RSS feed.")
 
-    # 2. 기존 mockData.ts에서 logNo 및 최대 ID 확인
     mock_txt = open(MOCKDATA_PATH, "r", encoding="utf-8").read()
     existing_log_nos = set(int(x) for x in re.findall(r"logNo:\s*(\d+)", mock_txt))
     existing_ids = [int(x) for x in re.findall(r"id:\s*(\d+)", mock_txt)]
-    max_id = max(existing_ids) if existing_ids else 97
+    max_id = max(existing_ids) if existing_ids else 110
 
     print(f"Existing portfolio items in mockData: {len(existing_log_nos)} posts (Max ID: {max_id})")
 
@@ -169,7 +190,6 @@ def main():
         pub_date_str = item.findtext("pubDate", "").strip()
         desc_rss = item.findtext("description", "").strip()
 
-        # 오픈더쉐어 포트폴리오 적합성 검사
         if not is_open_the_share_portfolio(title, category, desc_rss):
             print(f"Skipping non-portfolio post: [{category}] {title}")
             continue
@@ -180,9 +200,7 @@ def main():
             print(f"Skipping: could not extract image for {log_no}")
             continue
 
-        # 날짜 파싱 (예: 'Tue, 03 Nov 2026 15:31:03 +0900' -> '2026.11.03')
         try:
-            # Parse RFC 822 date
             dt = datetime.strptime(pub_date_str[:16], "%a, %d %b %Y")
             period = dt.strftime("%Y.%m.%d")
             year = dt.strftime("%Y")
@@ -194,7 +212,6 @@ def main():
         local_filename = f"item_{max_id:03d}.jpg"
         local_path = os.path.join(PORTFOLIO_IMG_DIR, local_filename)
 
-        # 썸네일 이미지 다운로드 (네이버 핫링크 차단 방지)
         try:
             img_req = urllib.request.Request(details["imageUrl"], headers={
                 "User-Agent": "Mozilla/5.0",
@@ -209,9 +226,9 @@ def main():
             print(f"Failed to download image {details['imageUrl']}: {e}")
             continue
 
-        org_type, cat, partner = determine_metadata(title, details["desc"])
         clean_tit = clean_text(title)
         clean_story = clean_text(details["desc"])
+        org_type, cat, partner = determine_metadata(clean_tit, clean_story)
 
         gal_urls = [f"`${{BASE_URL}}images/portfolio/{local_filename}`"]
         for g in details["gallery"]:
@@ -241,7 +258,6 @@ def main():
         print("No new posts to update. Website is up to date.")
         return
 
-    # mockData.ts 파일에 신규 아이템 주입 (portfolioItems 배열 시작 부분에 삽입)
     print(f"Inserting {new_items_added} new portfolio items into mockData.ts...")
     target_needle = "portfolioItems: ["
     pos = mock_txt.find(target_needle)
@@ -253,9 +269,10 @@ def main():
             + "\n".join(new_portfolio_entries)
             + mock_txt[insert_pos:]
         )
+        updated_mock = sort_mockdata_portfolio_items(updated_mock)
         with open(MOCKDATA_PATH, "w", encoding="utf-8") as f:
             f.write(updated_mock)
-        print("Successfully updated mockData.ts!")
+        print("Successfully updated and chronologically sorted mockData.ts!")
     else:
         print("Could not find portfolioItems array in mockData.ts!")
 

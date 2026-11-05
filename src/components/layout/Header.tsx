@@ -2,7 +2,7 @@
  * @file Header.tsx
  * @description 웹사이트 상단 네비게이션 헤더 컴포넌트입니다.
  * 메인 랜딩 화면('home')과 포트폴리오 전용 페이지('portfolio') 간 전환을 지원하며,
- * 기존 사이트(https://openthe.kr/)의 공식 원본 로고(logo.png) 및 빠른 파트너십 문의/검색 버튼을 제공합니다.
+ * 사용자가 선택한 메뉴만 초록색(emerald) 활성 상태로 표시합니다.
  */
 import React, { useState, useEffect } from 'react';
 import logoImg from '../../assets/logo.png';
@@ -10,6 +10,7 @@ import { mockData } from '../../data/mockData';
 
 interface HeaderProps {
     currentView: 'home' | 'portfolio';
+    activeSection: string | null;
     onNavigateHome: (sectionId?: string) => void;
     onNavigatePortfolio: () => void;
     onInquiryClick: () => void;
@@ -18,6 +19,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({
     currentView,
+    activeSection,
     onNavigateHome,
     onNavigatePortfolio,
     onInquiryClick,
@@ -55,6 +57,13 @@ const Header: React.FC<HeaderProps> = ({
         }
     };
 
+    const isLinkActive = (link: (typeof navLinks)[number]) => {
+        if (link.type === 'page') {
+            return currentView === 'portfolio';
+        }
+        return currentView === 'home' && activeSection === link.sectionId;
+    };
+
     return (
         <header
             className={`sticky top-0 z-40 transition-all duration-300 ${
@@ -72,7 +81,7 @@ const Header: React.FC<HeaderProps> = ({
                     >
                         <img
                             src={logoImg}
-                            alt="(주)오픈더쉐어 로고"
+                            alt={`${mockData.companyInfo.name} 로고`}
                             className="h-9 md:h-10 w-auto object-contain transition-transform group-hover:scale-102"
                         />
                     </button>
@@ -80,25 +89,27 @@ const Header: React.FC<HeaderProps> = ({
                     {/* 중앙 네비게이션 메뉴 (데스크톱) */}
                     <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
                         {navLinks.map((link) => {
-                            const isCurrent =
-                                (link.type === 'page' && currentView === 'portfolio') ||
-                                (link.type === 'section' && currentView === 'home');
+                            const isSelected = isLinkActive(link);
 
                             return (
                                 <button
                                     key={link.name}
                                     onClick={() => handleNavClick(link)}
                                     className={`px-3.5 py-2 rounded-full text-sm font-bold transition-colors inline-flex items-center gap-1.5 whitespace-nowrap ${
-                                        link.type === 'page' && currentView === 'portfolio'
+                                        isSelected
                                             ? 'text-emerald-600 bg-emerald-50'
-                                            : isCurrent
-                                            ? 'text-emerald-600'
                                             : 'text-slate-700 hover:text-emerald-600'
                                     }`}
                                 >
                                     <span>{link.name}</span>
                                     {link.type === 'page' && (
-                                        <span className="px-1.5 py-0.5 text-[10px] font-extrabold rounded-full bg-emerald-100 text-emerald-700">
+                                        <span
+                                            className={`px-1.5 py-0.5 text-[10px] font-extrabold rounded-full transition-colors ${
+                                                isSelected
+                                                    ? 'bg-emerald-600 text-white'
+                                                    : 'bg-slate-100 text-slate-600'
+                                            }`}
+                                        >
                                             {totalPortfolioCount}
                                         </span>
                                     )}
@@ -154,20 +165,33 @@ const Header: React.FC<HeaderProps> = ({
             {isMenuOpen && (
                 <div className="lg:hidden bg-white border-t border-slate-100 shadow-lg animate-slideDown">
                     <nav className="flex flex-col p-4 space-y-1">
-                        {navLinks.map((link) => (
-                            <button
-                                key={link.name}
-                                onClick={() => handleNavClick(link)}
-                                className="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 flex items-center justify-between"
-                            >
-                                <span>{link.name}</span>
-                                {link.type === 'page' && (
-                                    <span className="px-2 py-0.5 text-xs font-extrabold rounded-full bg-emerald-100 text-emerald-700 shrink-0">
-                                        {totalPortfolioCount}건 전체보기
-                                    </span>
-                                )}
-                            </button>
-                        ))}
+                        {navLinks.map((link) => {
+                            const isSelected = isLinkActive(link);
+                            return (
+                                <button
+                                    key={link.name}
+                                    onClick={() => handleNavClick(link)}
+                                    className={`w-full text-left px-4 py-3 rounded-xl font-bold flex items-center justify-between transition-colors ${
+                                        isSelected
+                                            ? 'bg-emerald-50 text-emerald-600'
+                                            : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-600'
+                                    }`}
+                                >
+                                    <span>{link.name}</span>
+                                    {link.type === 'page' && (
+                                        <span
+                                            className={`px-2 py-0.5 text-xs font-extrabold rounded-full shrink-0 ${
+                                                isSelected
+                                                    ? 'bg-emerald-600 text-white'
+                                                    : 'bg-slate-100 text-slate-600'
+                                            }`}
+                                        >
+                                            {totalPortfolioCount}건 전체보기
+                                        </span>
+                                    )}
+                                </button>
+                            );
+                        })}
                         <div className="border-t border-slate-100 pt-3 mt-2">
                             <button
                                 onClick={() => {

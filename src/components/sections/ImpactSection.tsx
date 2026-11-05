@@ -1,11 +1,24 @@
 /**
  * @file ImpactSection.tsx
- * @description 오픈더쉐어의 실제 포트폴리오 및 참여기관 파트너십 성과를 보여주는 섹션입니다.
+ * @description 오픈더쉐어의 실제 포트폴리오 및 참여기관 파트너십 성과를 동적으로 집계하여 보여주는 섹션입니다.
  */
 import React from 'react';
 import { mockData } from '../../data/mockData';
 
 const ImpactSection: React.FC = () => {
+    const partnerCount = mockData.partners.length;
+    const portfolioCount = mockData.portfolioItems.length;
+
+    const dynamicStats = mockData.impactStats.map((stat) => {
+        if (stat.id === 1) {
+            return { ...stat, value: `${partnerCount}+` };
+        }
+        if (stat.id === 2) {
+            return { ...stat, value: `${portfolioCount}+` };
+        }
+        return stat;
+    });
+
     return (
         <section id="impact" className="py-20 bg-emerald-900 text-white">
             <div className="max-w-7xl mx-auto px-4">
@@ -21,7 +34,7 @@ const ImpactSection: React.FC = () => {
                     </p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {mockData.impactStats.map((stat) => (
+                    {dynamicStats.map((stat) => (
                         <div
                             key={stat.id}
                             className="bg-white/10 backdrop-blur-sm border border-white/15 p-7 rounded-3xl text-center hover:bg-white/15 transition-colors min-w-0"

@@ -46,6 +46,8 @@ function App() {
 
     // 현재 화면 뷰 상태 ('home' 메인 페이지 | 'portfolio' 전용 페이지네이션 페이지)
     const [currentView, setCurrentView] = useState<'home' | 'portfolio'>('home');
+    // 헤더에서 현재 선택된 섹션 ID (선택했을 때만 초록색 활성화)
+    const [activeSection, setActiveSection] = useState<string | null>(null);
     // 포트폴리오 전용 페이지 진입 시 초기 선택 탭 ('all' | 'ots' | '기업봉사' | '단체봉사')
     const [initialPortfolioFilter, setInitialPortfolioFilter] = useState<string>('all');
 
@@ -89,6 +91,7 @@ function App() {
     // 홈으로 이동 및 특정 섹션 스크롤
     const handleNavigateHome = (sectionId?: string) => {
         setCurrentView('home');
+        setActiveSection(sectionId || null);
         if (sectionId) {
             setTimeout(() => {
                 const el = document.getElementById(sectionId);
@@ -105,6 +108,7 @@ function App() {
     const handleNavigatePortfolio = (filter: string = 'all') => {
         setInitialPortfolioFilter(filter);
         setCurrentView('portfolio');
+        setActiveSection('portfolio');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
@@ -112,6 +116,7 @@ function App() {
         <div className="font-sans antialiased text-slate-800 bg-white min-h-screen flex flex-col">
             <Header
                 currentView={currentView}
+                activeSection={activeSection}
                 onNavigateHome={handleNavigateHome}
                 onNavigatePortfolio={() => handleNavigatePortfolio('all')}
                 onInquiryClick={() => setActiveModal('inquiry')}

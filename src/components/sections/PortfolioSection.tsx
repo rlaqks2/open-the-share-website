@@ -47,13 +47,15 @@ const PortfolioSection: React.FC<PortfolioSectionProps> = ({
 
     const totalCount = mockData.portfolioItems.length;
     const otsCount = useMemo(() => mockData.portfolioItems.filter(isOTSItem).length, []);
+    const corpCount = useMemo(() => mockData.portfolioItems.filter((i) => i.orgType === '기업봉사').length, []);
+    const groupCount = useMemo(() => mockData.portfolioItems.filter((i) => i.orgType === '단체봉사').length, []);
 
     const orgTabs = useMemo(() => [
         { key: 'all', label: '전체 스토리', badge: String(totalCount) },
         { key: 'ots', label: 'OPEN THE SHARE 최신', badge: String(otsCount) },
-        { key: '기업봉사', label: '기업 CSR · ESG 봉사', badge: '기업' },
-        { key: '단체봉사', label: '공공기관 · 대학 · 단체봉사', badge: '단체' },
-    ], [totalCount, otsCount]);
+        { key: '기업봉사', label: '기업 CSR · ESG 봉사', badge: String(corpCount) },
+        { key: '단체봉사', label: '공공기관 · 대학 · 단체봉사', badge: String(groupCount) },
+    ], [totalCount, otsCount, corpCount, groupCount]);
 
     const filteredList = useMemo(() => {
         let list = mockData.portfolioItems;

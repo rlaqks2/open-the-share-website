@@ -17,7 +17,9 @@ interface HeroSectionProps {
 
 const HeroSection: React.FC<HeroSectionProps> = ({ onInquiryClick, onPortfolioPageClick }) => {
     const { hero, portfolioItems } = mockData;
-    const latestItems = portfolioItems.slice(0, 3);
+    const latestItems = [...portfolioItems]
+        .sort((a, b) => b.period.localeCompare(a.period))
+        .slice(0, 3);
 
     return (
         <section className="relative overflow-hidden bg-gradient-to-b from-[#F1F8F5] via-[#F8FAF9] to-white pt-12 pb-20 border-b border-slate-100">
