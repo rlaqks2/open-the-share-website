@@ -51,20 +51,35 @@ def fetch_post_details(log_no: int):
     og_title = re.search(r'<meta\s+property=["\']og:title["\']\s+content=["\']([^"\']+)["\']', raw_html)
     og_desc = re.search(r'<meta\s+property=["\']og:description["\']\s+content=["\']([^"\']+)["\']', raw_html)
 
-    # 모든 블로그 본문 사진 URL 탐색 (모바일 mblogthumb, postfiles, blogfiles 포함)
-    photos = re.findall(r'https://(?:postfiles|blogfiles|mblogthumb-phinf)\.pstatic\.net/[^"\'\s)]+', raw_html)
+    # PC PostView 본문 내 se-image-resource 사진 탐색 (첫 번째 썸네일 중복 및 하단 배너/스티커 제외, 404 방지 mblogthumb-phinf 변환)
     gallery = []
     seen = set()
-    for p in photos:
-        base_p = p.split("?")[0]
-        # 블로그 하단 공통 배너 및 위젯 제외
-        if any(ign in base_p for ign in ["%ED%93%A8%EC%B2%98", "%EC%89%90%EC%96%B4", "블로그하단", "오픈더퓨처.jpg"]):
-            continue
-        if base_p not in seen:
-            seen.add(base_p)
-            gallery.append(base_p + "?type=w800")
-            if len(gallery) >= 8:
-                break
+    try:
+        pc_url = f"https://blog.naver.com/PostView.naver?blogId={BLOG_USER}&logNo={log_no}"
+        pc_req = urllib.request.Request(pc_url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
+        with urllib.request.urlopen(pc_req, timeout=12) as pc_resp:
+            pc_html = pc_resp.read().decode("utf-8", errors="replace")
+        img_tags = re.findall(r'<img[^>]*class="[^"]*se-image-resource[^"]*"[^>]*>', pc_html)
+        for idx, tag in enumerate(img_tags):
+            if idx == 0:
+                continue  # 첫 번째 사진은 대표 썸네일(local_filename)과 동일하므로 중복 제외
+            m_src = re.search(r'data-lazy-src="([^"]+)"', tag) or re.search(r'src="([^"]+)"', tag)
+            if not m_src:
+                continue
+            base_p = m_src.group(1).split("?")[0].replace("https://postfiles.pstatic.net/", "https://mblogthumb-phinf.pstatic.net/")
+            if any(ign in base_p for ign in [
+                "%ED%93%A8%EC%B2%98", "%EC%89%90%EC%96%B4", "블로그하단",
+                "thumb-6a802ff34b9c413c79fdbeb176665ab8", "%BF%C0%C7%C2%B4%F5%C7%BB%C3%B3",
+                "MDAxNzgzNTcwMDA3OTg5"
+            ]):
+                continue
+            if base_p not in seen:
+                seen.add(base_p)
+                gallery.append(base_p + "?type=w800")
+                if len(gallery) >= 7:
+                    break
+    except Exception as e:
+        print(f"Warning: Failed to fetch PC gallery for {log_no}: {e}")
 
     img_url = og_img.group(1) if og_img else ""
     if img_url and "?type=" not in img_url:
@@ -160,15 +175,11 @@ def fetch_press_article_details(log_no: int):
     }
 
 def is_open_the_share_portfolio(title: str, category: str, desc: str) -> bool:
-    exclude_categories = ["새소식", "오픈더퓨처소식", "공지사항", "자원봉사모집", "보도자료", "든든복지정보", "폭닥폭닥뉴스"]
+    exclude_categories = ["새소식", "오픈더퓨처소식", "공지사항", "자원봉사모집", "보도자료"]
     if any(ex in category for ex in exclude_categories):
         return False
 
-    exclude_titles = [
-        "신청 안내", "모집 안내", "후원 안내", "정기총회", "이사회", "선정 결과", "지원사업",
-        "트렌드", "아이디어", "장점은 뭘까", "어디에 기부할 수 있을까", "알아두면 좋은 것들",
-        "다양한 나눔", "컬러의 힘", "키트 종류", "총정리"
-    ]
+    exclude_titles = ["신청 안내", "모집 안내", "후원 안내", "정기총회", "이사회", "선정 결과", "지원사업"]
     if any(ex in title for ex in exclude_titles):
         return False
 
