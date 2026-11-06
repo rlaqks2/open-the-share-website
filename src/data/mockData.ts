@@ -2028,61 +2028,106 @@ export const mockData = {
   ] as PortfolioItem[],
 
   pressReleases: [
-  {
-    "id": 1,
-    "title": "한국무라타전자, 지역 아동과 함께하는 참여형 사회공헌 ‘사랑의 베이킹 클래스’ 성료",
-    "date": "2026.08.06",
-    "source": "언론보도",
-    "category": "지역사회 나눔",
-    "summary": "한국무라타전자와 오픈더쉐어가 지역 아동들과 함께 사랑의 베이킹 클래스를 진행하며 따뜻한 교감과 나눔의 시간을 가졌습니다.",
-    "link": "https://openthe.kr/yc/bbs/board.php?bo_table=notice&wr_id=156"
-  },
-  {
-    "id": 2,
-    "title": "밀알복지재단, 흥국에프엔비·테일러팜스와 임직원 참여형 봉사활동 진행",
-    "date": "2026.05.28",
-    "source": "언론보도",
-    "category": "원데이메이킹",
-    "summary": "흥국에프엔비와 테일러팜스 임직원들이 참여하여 취약계층 아동을 위한 연필꽂이 및 필통&매트 세트 제작 사회공헌활동을 성황리에 마쳤습니다.",
-    "link": "https://openthe.kr/yc/bbs/board.php?bo_table=notice&wr_id=155"
-  },
-  {
-    "id": 3,
-    "title": "한국무라타전자, 과학 인재 육성을 위한 STEAM 교육 ‘찾아가는 과학교실’ 성료",
-    "date": "2026.01.28",
-    "source": "언론보도",
-    "category": "찾아가는 과학교실",
-    "summary": "한솔지역아동센터 및 성남시 아동을 대상으로 미래 과학 인재 양성을 위한 체험형 STEAM 창의 과학교실 프로그램을 진행했습니다.",
-    "link": "https://openthe.kr/yc/bbs/board.php?bo_table=notice&wr_id=154"
-  },
-  {
-    "id": 4,
-    "title": "한국무라타전자, ‘사랑의 김장 나눔’으로 지역 어르신에게 따뜻한 온정 전달",
-    "date": "2025.11.12",
-    "source": "언론보도",
-    "category": "지역사회 나눔",
-    "summary": "겨울철 취약계층 및 독거 어르신들의 건강한 식생활을 지원하기 위해 임직원들이 직접 김치를 담그며 온정을 나누었습니다.",
-    "link": "https://openthe.kr/yc/bbs/board.php?bo_table=notice&wr_id=153"
-  },
-  {
-    "id": 5,
-    "title": "한국무라타전자, 깨끗한 하천을 위한 작은 실천 ‘EM 흙공 만들기’ 사회공헌활동 진행",
-    "date": "2025.10.23",
-    "source": "언론보도",
-    "category": "친환경 ESG",
-    "summary": "유용 미생물(EM) 발효액과 황토를 활용한 EM 흙공을 제작·투척하여 성남 금토천 수질 정화와 생태계 복원에 기여했습니다.",
-    "link": "https://openthe.kr/yc/bbs/board.php?bo_table=notice&wr_id=152"
-  },
-  {
-    "id": 6,
-    "title": "한국무라타전자, 취약계층 아동의 교육격차 해소를 위한 '찾아가는 과학교실' 성료",
-    "date": "2025.08.27",
-    "source": "언론보도",
-    "category": "찾아가는 과학교실",
-    "summary": "지역아동센터 아동들에게 과학 키트 실습과 임직원 1:1 멘토링을 제공하는 교육 사회공헌 프로그램을 성공적으로 마쳤습니다.",
-    "link": "https://openthe.kr/yc/bbs/board.php?bo_table=notice&wr_id=151"
-  }
-] as PressReleaseItem[],
+    {
+      id: 1,
+      title: "한국무라타전자, 깨끗한 하천을 위한 작은 실천 ‘EM 흙공 만들기’ 사회공헌활동 진행",
+      date: "2025.10.23",
+      source: "시민일보",
+      category: "친환경 ESG",
+      summary: "세계 MLCC 시장 점유율 1위 기업 한국무라타전자가 사회공헌기획사 오픈더쉐어와 함께 판교테크노밸리 인근 하천변에서 수질 정화를 위한 EM 흙공 만들기 사회공헌활동을 성공적으로 마쳤습니다.",
+      link: "https://www.siminilbo.co.kr/news/newsview.php?ncode=1160270970293451"
+    },
+    {
+      id: 2,
+      title: "한국무라타전자, 2025 취약계층 아동 교육격차 해소를 위한 '찾아가는 과학교실' 성료",
+      date: "2025.08.27",
+      source: "비즈월드",
+      category: "찾아가는 과학교실",
+      summary: "한국무라타전자와 오픈더쉐어가 취약계층 아동을 위해 3년째 이어오고 있는 희망나눔 사회공헌 프로젝트 '찾아가는 과학교실'로 창의적인 STEAM 교육을 성공적으로 마무리했습니다.",
+      link: "https://www.bizwnews.com/news/articleView.html?idxno=110182"
+    },
+    {
+      id: 3,
+      title: "케민코리아, 선행으로 새해 시작… 소외계층 아동을 위한 DIY 다이어리 나눔",
+      date: "2025.01.24",
+      source: "축산경제신문",
+      category: "원데이메이킹",
+      summary: "케민코리아 임직원들이 신년 시무식을 맞아 소외계층 아동들이 꿈과 목표를 키워갈 수 있도록 따뜻한 응원 메시지가 담긴 DIY 다이어리를 직접 제작해 지역 아동센터에 전달했습니다.",
+      link: "https://www.chukkyung.co.kr/news/articleView.html?idxno=74531"
+    },
+    {
+      id: 4,
+      title: "한국무라타전자, 취약계층 아동 교육격차 해소 위한 STEAM 교육 사회공헌 진행",
+      date: "2024.04.05",
+      source: "피앤피뉴스",
+      category: "찾아가는 과학교실",
+      summary: "태양광 친환경 에너지를 활용한 전기자동차를 임직원과 아동들이 함께 제작하며 과학 지식을 배우고 창의적 문제해결 능력을 키우는 과학교실 멘토링을 진행했습니다.",
+      link: "https://www.gosiweek.com/article/1065573300533653"
+    },
+    {
+      id: 5,
+      title: "한국무라타전자, 지역사회공헌활동 박차… 과학인재 양성에 더욱 힘쓸 계획",
+      date: "2024.03.29",
+      source: "얼리어답터뉴스",
+      category: "원데이메이킹",
+      summary: "한국무라타전자 전 임직원이 참여하여 마운틴 플로깅부터 취약계층 나눔 활동까지 5개월간 8회에 걸쳐 다채로운 희망나눔 사회공헌 프로젝트를 성공적으로 펼쳤습니다.",
+      link: "https://www.eanews.kr/news/770592"
+    },
+    {
+      id: 6,
+      title: "한국무라타전자, 취약계층 아동 교육 지원 ‘희망나눔 프로젝트’ 성료",
+      date: "2024.03.20",
+      source: "내외경제TV",
+      category: "지역사회 나눔",
+      summary: "서울 관악구 및 용인 기흥구 지역아동센터 아동 80명을 대상으로 임직원 1:1 맞춤형 멘토링과 교육 지원 사회공헌활동을 펼쳤습니다.",
+      link: "https://www.nbntv.co.kr/news/articleView.html?idxno=3013040"
+    },
+    {
+      id: 7,
+      title: "성남시 꿈드림·오픈더쉐어, 학교 밖 청소년과 취약계층 아동 위한 사회공헌 프로젝트 성료",
+      date: "2023.05.19",
+      source: "기호일보",
+      category: "원데이메이킹",
+      summary: "성남시청소년지원센터 꿈드림의 학교 밖 청소년들이 오픈더쉐어와 함께 취약계층 아동들을 위한 나눔 물품을 정성껏 제작하여 기부하는 따뜻한 나눔을 실천했습니다.",
+      link: "http://www.kihoilbo.co.kr/news/articleView.html?idxno=1033689"
+    },
+    {
+      id: 8,
+      title: "오픈더퓨처, 자원봉사 우수수요처 경기도지사 표창 수상",
+      date: "2022.12.09",
+      source: "데일리경제",
+      category: "언론보도",
+      summary: "투명하고 체계적인 자원봉사 운영과 지역사회 공헌 활동의 공로를 인정받아 자원봉사 우수수요처 경기도지사 표창을 수상했습니다.",
+      link: "http://www.kdpress.co.kr/news/articleView.html?idxno=117211"
+    },
+    {
+      id: 9,
+      title: "한국무라타전자와 함께 한 ‘연말연시 희망 나눔 프로젝트’ 성료",
+      date: "2022.11.25",
+      source: "경상일보",
+      category: "지역사회 나눔",
+      summary: "연말을 맞아 한국무라타전자 임직원들이 직접 동지 팥죽과 김치를 담가 소외계층 및 지역 어르신들에게 전달하며 온정을 나눴습니다.",
+      link: "http://www.ksilbo.co.kr/news/articleView.html?idxno=954937"
+    },
+    {
+      id: 10,
+      title: "노인요양센터 노후공간 재생 프로젝트 성료… 한국무라타전자 후원",
+      date: "2022.10.21",
+      source: "데일리경제",
+      category: "스페이스 업사이클링",
+      summary: "어르신들의 안전하고 쾌적한 쉼터를 위해 노인요양센터의 노후 시설을 개보수하고 친환경 실내 환경을 조성하는 공간 재생 프로젝트를 마쳤습니다.",
+      link: "http://www.kdpress.co.kr/news/articleView.html?idxno=116814"
+    },
+    {
+      id: 11,
+      title: "한국무라타전자와 함께 한 청소년 사회공헌 프로젝트 성료",
+      date: "2022.04.08",
+      source: "컨슈머타임스",
+      category: "원데이메이킹",
+      summary: "청소년들의 정서 함양과 나눔 문화 확산을 위한 참여형 사회공헌 프로젝트를 성공적으로 마무리했습니다.",
+      link: "https://www.cstimes.com/news/articleView.html?idxno=494844"
+    }
+  ] as PressReleaseItem[],
 
   testimonials: [
     {
