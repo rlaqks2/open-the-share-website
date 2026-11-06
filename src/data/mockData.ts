@@ -1919,6 +1919,24 @@ export const mockData = {
 
   pressReleases: [
     {
+      id: 999,
+      title: "한국무라타전자, 깨끗한 하천을 위한 작은 실천 ‘EM 흙공 만들기’ 사회공헌활동 진행",
+      date: "2026.06.11",
+      source: "시민일보",
+      category: "친환경 ESG",
+      summary: "한국무라타전자, 깨끗한 하천을 위한 작은 실천 ‘EM 흙공 만들기’",
+      link: "https://www.siminilbo.co.kr/news/newsview.php?ncode&#x3D;1160270970293451"
+    },
+    {
+      id: 999,
+      title: "한국무라타전자 2025 취약계층 아동의 교육격차 해소를 위한 '찾아가는 과학교실' 성료",
+      date: "2026.06.11",
+      source: "비즈월드",
+      category: "찾아가는 과학교실",
+      summary: "한국무라타전자 2025 취약계층 아동의 교육격차 해소를 위한",
+      link: "https://www.bizwnews.com/news/articleView.html?idxno&#x3D;110182"
+    },
+    {
       id: 1,
       title: "한국무라타전자, 깨끗한 하천을 위한 작은 실천 ‘EM 흙공 만들기’ 사회공헌활동 진행",
       date: "2025.10.23",
