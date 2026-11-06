@@ -22,8 +22,31 @@ const PortfolioDetailModal: React.FC<PortfolioDetailModalProps> = ({ item, onClo
 
     if (!item) return null;
 
-    const images =
-        item.galleryUrls && item.galleryUrls.length > 0 ? item.galleryUrls : [item.imageUrl];
+    // 이미지 중복 및 공통 푸터 배너 필터링 (고유한 활동 사진만 유지)
+    const images = React.useMemo(() => {
+        if (!item) return [];
+        const rawUrls = item.galleryUrls && item.galleryUrls.length > 0 ? item.galleryUrls : [item.imageUrl];
+        const seen = new Set<string>();
+        const filtered: string[] = [];
+
+        for (const u of rawUrls) {
+            if (!u) continue;
+            // 블로그 하단 공통 배너 제외
+            if (u.includes('블로그하단') || u.includes('%ED%93%A8%EC%B2%98') || u.includes('%EC%89%90%EC%96%B4')) {
+                continue;
+            }
+            // URL 정규화 키 (파일명 기준 비교)
+            const parts = u.split('/');
+            const filename = (parts[parts.length - 1] || '').split('?')[0];
+            const key = filename && filename !== 'image.png' ? filename : u;
+
+            if (!seen.has(key)) {
+                seen.add(key);
+                filtered.push(u);
+            }
+        }
+        return filtered.length > 0 ? filtered : [item.imageUrl];
+    }, [item]);
     const currentImage = images[activeImageIndex] || item.imageUrl;
 
     const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {

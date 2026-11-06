@@ -51,12 +51,15 @@ def fetch_post_details(log_no: int):
     og_title = re.search(r'<meta\s+property=["\']og:title["\']\s+content=["\']([^"\']+)["\']', raw_html)
     og_desc = re.search(r'<meta\s+property=["\']og:description["\']\s+content=["\']([^"\']+)["\']', raw_html)
 
-    # 모든 블로그 본문 사진 URL 탐색 (갤러리용)
-    photos = re.findall(r'https://postfiles\.pstatic\.net/[^"\'\s)]+|https://blogfiles\.pstatic\.net/[^"\'\s)]+', raw_html)
+    # 모든 블로그 본문 사진 URL 탐색 (모바일 mblogthumb, postfiles, blogfiles 포함)
+    photos = re.findall(r'https://(?:postfiles|blogfiles|mblogthumb-phinf)\.pstatic\.net/[^"\'\s)]+', raw_html)
     gallery = []
     seen = set()
     for p in photos:
         base_p = p.split("?")[0]
+        # 블로그 하단 공통 배너 및 위젯 제외
+        if any(ign in base_p for ign in ["%ED%93%A8%EC%B2%98", "%EC%89%90%EC%96%B4", "블로그하단", "오픈더퓨처.jpg"]):
+            continue
         if base_p not in seen:
             seen.add(base_p)
             gallery.append(base_p + "?type=w800")
@@ -157,11 +160,15 @@ def fetch_press_article_details(log_no: int):
     }
 
 def is_open_the_share_portfolio(title: str, category: str, desc: str) -> bool:
-    exclude_categories = ["새소식", "오픈더퓨처소식", "공지사항", "자원봉사모집", "보도자료"]
+    exclude_categories = ["새소식", "오픈더퓨처소식", "공지사항", "자원봉사모집", "보도자료", "든든복지정보", "폭닥폭닥뉴스"]
     if any(ex in category for ex in exclude_categories):
         return False
 
-    exclude_titles = ["신청 안내", "모집 안내", "후원 안내", "정기총회", "이사회", "선정 결과", "지원사업"]
+    exclude_titles = [
+        "신청 안내", "모집 안내", "후원 안내", "정기총회", "이사회", "선정 결과", "지원사업",
+        "트렌드", "아이디어", "장점은 뭘까", "어디에 기부할 수 있을까", "알아두면 좋은 것들",
+        "다양한 나눔", "컬러의 힘", "키트 종류", "총정리"
+    ]
     if any(ex in title for ex in exclude_titles):
         return False
 
