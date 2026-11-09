@@ -23,7 +23,7 @@ import InquiryModal from './components/modals/InquiryModal';
 import PortfolioDetailModal from './components/modals/PortfolioDetailModal';
 import PrivacyPolicyModal from './components/modals/PrivacyPolicyModal';
 import Modal from './components/ui/Modal';
-import { trackVisitor } from './utils/visitorTracker';
+import { trackPageView, trackEvent } from './services/analytics';
 import { useScrollObserver } from './hooks/useScrollObserver';
 import { PortfolioItem } from './types';
 
@@ -43,19 +43,34 @@ function App() {
     const [activeModal, setActiveModal] = useState<ModalType | null>(null);
     const [selectedPortfolioItem, setSelectedPortfolioItem] = useState<PortfolioItem | null>(null);
 
-    // 방문자 로그 수집 (화면 전환 시마다) — 데이터는 관리자 구글 시트로만 전송, 사이트에 UI 없음 (docs/VISITOR_LOG.md)
+    // 화면 전환 시 가상 페이지뷰 측정 (GA4 / Postgres / 구글 시트 — 설정된 곳으로만, docs/ANALYTICS.md)
     useEffect(() => {
-        const pageTitle =
-            currentView === 'home'
-                ? '오픈더쉐어 - 메인 홈'
-                : `오픈더쉐어 - 포트폴리오 (${initialPortfolioFilter})`;
-        trackVisitor(pageTitle);
+        if (currentView === 'home') {
+            trackPageView('/', '오픈더쉐어 - 메인 홈');
+        } else {
+            trackPageView(
+                `/portfolio?filter=${encodeURIComponent(initialPortfolioFilter)}`,
+                `오픈더쉐어 - 포트폴리오 (${initialPortfolioFilter})`
+            );
+        }
     }, [currentView, initialPortfolioFilter]);
 
     // 포트폴리오 상세 모달 열기
     const openPortfolioDetail = (item: PortfolioItem) => {
         setSelectedPortfolioItem(item);
         setActiveModal('portfolioDetail');
+        trackEvent('portfolio_view', {
+            item_id: String(item.id),
+            item_title: item.title,
+            partner: item.partner,
+            category: item.category,
+        });
+    };
+
+    // 문의 모달 열기 (source: 어느 버튼에서 열었는지 — 전환 경로 분석용)
+    const openInquiry = (source: string) => {
+        setActiveModal('inquiry');
+        trackEvent('inquiry_open', { source });
     };
 
     // 모달 닫기
@@ -95,14 +110,14 @@ function App() {
                 activeSection={activeSection}
                 onNavigateHome={handleNavigateHome}
                 onNavigatePortfolio={() => handleNavigatePortfolio('all')}
-                onInquiryClick={() => setActiveModal('inquiry')}
+                onInquiryClick={() => openInquiry('header')}
                 onSearchClick={() => setActiveModal('search')}
             />
 
             {currentView === 'home' ? (
                 <main className="flex-grow">
                     <HeroSection
-                        onInquiryClick={() => setActiveModal('inquiry')}
+                        onInquiryClick={() => openInquiry('hero')}
                         onPortfolioPageClick={() => handleNavigatePortfolio('all')}
                         onPortfolioItemClick={openPortfolioDetail}
                     />
@@ -117,7 +132,7 @@ function App() {
                     <TestimonialsSection />
                     <PartnersSection />
                     <FAQSection />
-                    <CTASection onInquiryClick={() => setActiveModal('inquiry')} />
+                    <CTASection onInquiryClick={() => openInquiry('cta')} />
                 </main>
             ) : (
                 <main className="flex-grow">
@@ -125,7 +140,7 @@ function App() {
                         initialFilter={initialPortfolioFilter}
                         onPortfolioItemClick={openPortfolioDetail}
                         onBackToHome={() => handleNavigateHome()}
-                        onInquiryClick={() => setActiveModal('inquiry')}
+                        onInquiryClick={() => openInquiry('portfolio_page')}
                     />
                 </main>
             )}

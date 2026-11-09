@@ -3,8 +3,9 @@
  * @description 웹사이트 전체 포트폴리오를 제목·파트너명·테마·스토리로 실시간 검색하는 모달 컴포넌트입니다.
  * ESC 키 또는 바깥 영역 클릭으로 닫히며, 열려 있는 동안 배경 스크롤을 잠급니다.
  */
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { mockData } from '../../data/mockData';
+import { trackEvent } from '../../services/analytics';
 import { PortfolioItem } from '../../types';
 
 interface SearchModalProps {
@@ -44,6 +45,18 @@ const SearchModal: React.FC<SearchModalProps> = ({
             document.body.style.overflow = '';
         };
     }, [onClose]);
+
+    // 검색어 측정: 입력이 1.2초 멈췄을 때 1회 (2글자 이상, 같은 검색어 중복 전송 방지)
+    const lastTrackedQuery = useRef('');
+    useEffect(() => {
+        const q = query.trim();
+        if (q.length < 2 || q === lastTrackedQuery.current) return;
+        const t = setTimeout(() => {
+            lastTrackedQuery.current = q;
+            trackEvent('search', { search_term: q.slice(0, 50) });
+        }, 1200);
+        return () => clearTimeout(t);
+    }, [query]);
 
     const searchResults = useMemo(() => {
         const q = query.trim().toLowerCase();

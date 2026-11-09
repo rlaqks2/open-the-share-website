@@ -9,6 +9,7 @@ import emailjs from '@emailjs/browser';
 import { siteConfig } from '../../config/site';
 import { mockData } from '../../data/mockData';
 import { inquiryConsentSummary } from '../../data/privacyPolicy';
+import { trackEvent } from '../../services/analytics';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_PATTERN = /^[0-9+\-()\s]{8,20}$/;
@@ -91,10 +92,13 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onSubmitted, onError }) => {
             .send(serviceId, templateId, templateParams, publicKey)
             .then(() => {
                 setIsSending(false);
+                // 전환 측정: 개인정보(기관명·이름·연락처·내용)는 보내지 않고 유형만 기록
+                trackEvent('generate_lead', { org_category: form.orgCategory, program_type: form.programType });
                 onSubmitted();
             })
             .catch(() => {
                 setIsSending(false);
+                trackEvent('inquiry_error', { org_category: form.orgCategory });
                 if (onError) {
                     onError();
                 } else {

@@ -2,6 +2,15 @@
 
 콘텐츠(포트폴리오 추가 등) 변경은 기록하지 않습니다. 구조·규칙·배포·외부연동이 바뀔 때만 기록합니다.
 
+## 2026-11-09 (4) — 측정 레이어 · GA4 · Supabase(Postgres) 1차 데이터 수집
+
+- `src/services/analytics.ts` 신설: `trackPageView` / `trackEvent` 단일 진입점 → GA4 · Supabase · 기존 구글 시트로 분기 (환경변수 없으면 전부 비활성, dev 서버 비활성)
+- 이벤트: `page_view`(가상 경로 `/`, `/portfolio?filter=`), `inquiry_open`(source), `generate_lead`, `inquiry_error`, `portfolio_view`, `search` — 개인정보(이름·연락처·문의 내용)는 보내지 않음
+- `supabase/` 신설: 마이그레이션(`site_events`, `ip_lookups`, 분석 뷰, RLS 차단, pg_cron 1년 파기), Edge Function `collect`(Origin·이벤트 허용목록·크기 검증, 서버 측 IP 판별, 세션 첫 방문만 ipapi 조회)
+- 빌드 변수 추가: `VITE_GA_MEASUREMENT_ID`, `VITE_ANALYTICS_COLLECT_URL` (`deploy.yml`, `sync-blog.yml` 둘 다)
+- 개인정보 처리방침: 켜진 도구만 빌드 시점에 고지(GA4 쿠키·거부 방법, Supabase 위탁, 이용 행태 항목)
+- 문서: `docs/ANALYTICS.md` 신설, ARCHITECTURE · NO_BACKEND_POLICY 갱신
+
 ## 2026-11-09 (3) — 방문자 로그 화면 제거 · 관리자 시트 방식으로 전환
 
 - 사이트의 방문자 로그 모달·푸터 버튼·Ctrl+Shift+L 단축키 제거 (`VisitorLogModal.tsx` 는 빈 파일 → 삭제 가능)

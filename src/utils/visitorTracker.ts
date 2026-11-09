@@ -37,8 +37,8 @@ interface VisitorLogData {
   language: string;
 }
 
-// 고유 세션 ID 생성 및 반환 (세션 동안 유지)
-function getOrCreateSessionId(): string {
+// 고유 세션 ID 생성 및 반환 (세션 동안 유지) — services/analytics.ts 의 Postgres 수집기와 같은 값을 공유
+export function getOrCreateSessionId(): string {
   try {
     let sid = sessionStorage.getItem('ots_session_id');
     if (!sid) {

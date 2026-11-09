@@ -10,6 +10,14 @@ import { mockData } from './mockData';
 
 const { companyInfo } = mockData;
 
+/**
+ * 실제로 켜진 측정 도구만 고지하도록 빌드 환경변수로 판단합니다. (src/services/analytics.ts 와 같은 조건)
+ * GitHub Actions Variables 에 값을 등록하면 다음 배포부터 해당 항목이 처리방침에 나타납니다.
+ */
+const GA_ENABLED = Boolean((import.meta.env.VITE_GA_MEASUREMENT_ID || '').trim());
+const DB_ENABLED = Boolean((import.meta.env.VITE_ANALYTICS_COLLECT_URL || '').trim());
+const BEHAVIOR_ENABLED = GA_ENABLED || DB_ENABLED;
+
 export interface PolicySection {
     title: string;
     paragraphs?: string[];
@@ -45,6 +53,15 @@ export const privacyPolicy = {
                         '접속 일시, IP 주소, 접속 지역(국가·시·도), 통신사·기관명, 방문 페이지, 유입 경로(referrer·UTM), 기기 종류, 운영체제, 브라우저, 화면 해상도, 언어, 임의 세션 식별값',
                         '웹사이트 이용 과정에서 자동 생성·수집',
                     ],
+                    ...(BEHAVIOR_ENABLED
+                        ? [
+                              [
+                                  '이용 행태 (자동 수집)',
+                                  `문의 창 열기 및 문의 접수 여부·단체 유형, 열람한 포트폴리오, 사이트 내 검색어${GA_ENABLED ? ', 분석 쿠키 식별값(Google Analytics)' : ''}`,
+                                  '웹사이트 이용 과정에서 자동 생성·수집 (문의 폼에 입력한 이름·연락처·내용은 포함하지 않음)',
+                              ],
+                          ]
+                        : []),
                 ],
             },
             paragraphs: [
@@ -55,7 +72,9 @@ export const privacyPolicy = {
             title: '제3조 (개인정보의 처리 및 보유 기간)',
             bullets: [
                 '파트너십 문의 정보: 문의 접수일로부터 1년 (상담·계약이 진행되는 경우 해당 업무 종료 시까지)',
-                '방문 기록: 수집일로부터 1년',
+                BEHAVIOR_ENABLED
+                    ? `방문 기록 및 이용 행태: 수집일로부터 1년${GA_ENABLED ? ' (Google Analytics 의 사용자 단위 데이터는 2개월 후 자동 삭제)' : ''}`
+                    : '방문 기록: 수집일로부터 1년',
                 '다만, 관계 법령에 따라 보존할 필요가 있는 경우 해당 법령에서 정한 기간 동안 보관합니다.',
             ],
         },
@@ -73,6 +92,12 @@ export const privacyPolicy = {
                 rows: [
                     ['EmailJS', '문의 내용의 이메일 발송', '문의 폼 입력 항목 전체', '해외 서버 / 문의 제출 시 네트워크 전송'],
                     ['Google LLC (Google Sheets)', '방문 기록 저장', '방문 기록 항목', '미국 등 / 페이지 방문 시 네트워크 전송'],
+                    ...(GA_ENABLED
+                        ? [['Google LLC (Google Analytics)', '웹사이트 이용 통계 분석', '방문 기록·이용 행태 항목 (IP 주소는 Google 이 저장하지 않음)', '미국 등 / 페이지 이용 시 네트워크 전송']]
+                        : []),
+                    ...(DB_ENABLED
+                        ? [['Supabase Inc.', '방문 기록·이용 행태 저장 (데이터베이스)', '방문 기록·이용 행태 항목', '대한민국(서울 리전) 서버 / 페이지 이용 시 네트워크 전송']]
+                        : []),
                     ['ipapi.co, ipify', 'IP 기반 접속 지역 조회', 'IP 주소', '해외 서버 / 페이지 방문 시 네트워크 전송'],
                 ],
             },
@@ -96,14 +121,21 @@ export const privacyPolicy = {
             bullets: [
                 '개인정보 접근 권한을 업무 담당자로 최소화',
                 '전송 구간 암호화(HTTPS) 적용',
-                '수신 메일함·스프레드시트 계정의 접근 통제 및 비밀번호 관리',
+                DB_ENABLED
+                    ? '수신 메일함·스프레드시트·데이터베이스 계정의 접근 통제 및 비밀번호 관리 (데이터베이스는 외부 직접 접근 차단)'
+                    : '수신 메일함·스프레드시트 계정의 접근 통제 및 비밀번호 관리',
             ],
         },
         {
             title: '제9조 (자동 수집 장치의 설치·운영 및 거부)',
             paragraphs: [
-                '회사는 별도의 광고·추적용 쿠키를 사용하지 않습니다. 다만 중복 방문 집계 방지를 위해 브라우저 세션 저장소(sessionStorage)에 임의의 세션 식별값과 최근 방문 시각을 저장하며, 브라우저 탭을 닫으면 자동 삭제됩니다.',
-                '이용자는 브라우저 설정에서 사이트 데이터를 삭제하거나 저장을 차단할 수 있으며, 이 경우에도 웹사이트 이용에는 제한이 없습니다.',
+                GA_ENABLED
+                    ? '회사는 웹사이트 이용 통계 분석을 위해 Google Analytics 의 분석 쿠키(_ga 등)를 사용합니다. 광고 개인화 및 Google 신호(교차 기기 추적) 기능은 사용하지 않습니다.'
+                    : '회사는 별도의 광고·추적용 쿠키를 사용하지 않습니다.',
+                '방문 집계를 위해 브라우저 세션 저장소(sessionStorage)에 임의의 세션 식별값과 최근 방문 시각을 저장하며, 브라우저 탭을 닫으면 자동 삭제됩니다.',
+                GA_ENABLED
+                    ? '이용자는 브라우저 설정에서 쿠키·사이트 데이터를 삭제하거나 저장을 차단할 수 있고, Google 이 제공하는 차단 도구(tools.google.com/dlpage/gaoptout)로 Google Analytics 수집을 거부할 수 있습니다. 이 경우에도 웹사이트 이용에는 제한이 없습니다.'
+                    : '이용자는 브라우저 설정에서 사이트 데이터를 삭제하거나 저장을 차단할 수 있으며, 이 경우에도 웹사이트 이용에는 제한이 없습니다.',
             ],
         },
         {

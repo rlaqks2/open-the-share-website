@@ -19,6 +19,8 @@ flowchart LR
     EMAILJS["EmailJS<br/>문의 메일 발송"]
     GAS["Google Apps Script 웹앱<br/>→ Google Sheets (방문자 로그, 선택)"]
     IPAPI["ipapi.co / ipify<br/>(웹훅 설정 시에만)"]
+    GA4["Google Analytics 4<br/>(측정 ID 설정 시)"]
+    SB["Supabase Edge Function collect<br/>→ Postgres site_events (수집 URL 설정 시)"]
     CDN["jsDelivr<br/>Pretendard 폰트"]
 
     MASTER --> A1 --> GHP -->|"openthe.kr (CNAME)"| Browser
@@ -28,11 +30,15 @@ flowchart LR
     APP -->|"문의 폼"| EMAILJS
     APP -->|"방문 로그 POST(no-cors)"| GAS
     APP -.-> IPAPI
+    APP -->|"페이지뷰·이벤트 (gtag)"| GA4
+    APP -->|"페이지뷰·이벤트 (sendBeacon)"| SB
+    SB -.->|"세션 첫 방문 IP 조회"| IPAPI
     APP -->|"갤러리 이미지 핫링크"| NAVER
     APP --> CDN
 ```
 
-**핵심 포인트**: "서버" 역할은 ① 빌드 시점에 번들되는 `mockData.ts` ② GitHub Actions(배치 작업) ③ 외부 SaaS(EmailJS, Google Sheets) 가 나눠 맡습니다.
+**핵심 포인트**: "서버" 역할은 ① 빌드 시점에 번들되는 `mockData.ts` ② GitHub Actions(배치 작업) ③ 외부 SaaS(EmailJS, Google Sheets, GA4, Supabase) 가 나눠 맡습니다.
+측정 호출은 모두 `src/services/analytics.ts` 한 곳을 거칩니다 → [docs/ANALYTICS.md](../ANALYTICS.md)
 
 ## 2. 프론트엔드 구조
 
@@ -55,7 +61,7 @@ main.tsx → App.tsx
         ├─ PortfolioDetailModal (갤러리: 로컬 썸네일 + 네이버 원본 핫링크, 실패 시 썸네일로 대체)
         ├─ SearchModal (자체 오버레이, ESC 닫기)
         └─ PrivacyPolicyModal → data/privacyPolicy
-  (App 화면 전환 시) utils/visitorTracker → Apps Script → 관리자 구글 시트 (UI 없음)
+  (App 화면 전환·주요 행동 시) services/analytics → GA4 / Supabase collect / utils/visitorTracker(구글 시트) (UI 없음)
 ```
 
 ## 3. 데이터
@@ -73,7 +79,9 @@ main.tsx → App.tsx
 | 네이버 블로그 RSS | 포트폴리오 자동 수집 | `scripts/sync_blog.py` | 스크립트가 조용히 종료, 사이트 영향 없음 |
 | 네이버 pstatic 이미지 | 상세 모달 갤러리 | `mockData.galleryUrls` | `onError` → 로컬 썸네일로 대체 |
 | Google Apps Script | 방문자 로그 수집 (선택) | `VITE_GOOGLE_SHEET_WEBHOOK_URL` (GitHub Actions Variables) | 무시 (UX 영향 없음) |
-| ipapi.co / ipify | 방문자 IP·지역 조회 | 웹훅 설정 시에만 호출 | 무시 |
+| ipapi.co / ipify | 방문자 IP·지역 조회 | 웹훅 설정 시(브라우저), Supabase 수집기(서버, 세션 첫 방문만) | 무시 |
+| Google Analytics 4 | 행동 분석·전환(Ad Grants 대비) | `VITE_GA_MEASUREMENT_ID` (GitHub Actions Variables) | 무시 |
+| Supabase (Edge Function + Postgres) | 1차 이벤트 원장, SQL 분석 | `VITE_ANALYTICS_COLLECT_URL` + `supabase/` (마이그레이션·함수) | 무시 |
 | jsDelivr | Pretendard 웹폰트 (SRI 적용) | `index.html` | 시스템 폰트로 대체 |
 
 ## 5. 빌드·배포

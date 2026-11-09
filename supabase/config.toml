@@ -1,0 +1,8 @@
+# Supabase CLI 설정 (이 저장소에서는 DB 마이그레이션과 Edge Function 배포에만 사용)
+# project_id 는 로컬 식별용 이름입니다. 원격 프로젝트 연결은 `supabase link --project-ref <ref>` 로 합니다.
+# 가이드: docs/ANALYTICS.md
+project_id = "open-the-share-website"
+
+[functions.collect]
+# 브라우저가 sendBeacon 으로 JWT 없이 보내므로 JWT 검증을 끕니다. (함수 안에서 Origin·이벤트명 등으로 검증)
+verify_jwt = false

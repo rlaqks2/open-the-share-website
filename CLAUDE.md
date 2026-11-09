@@ -13,7 +13,7 @@
 - 운영 주소: https://openthe.kr (GitHub Pages + 커스텀 도메인, `public/CNAME`)
 - 저장소: `rlaqks2/open-the-share-website`, 기본 브랜치 `master`
 - 스택: **React 18 + TypeScript + Vite 5 + Tailwind CSS 3** (정적 SPA)
-- **백엔드 없음.** 서버·DB·로그인 없음. → 반드시 [NO_BACKEND_POLICY](docs/harness/NO_BACKEND_POLICY.md) 준수
+- **자체 백엔드 없음.** 서버·로그인 없음. DB 는 측정 데이터 전용 Supabase(SaaS) 뿐이며 브라우저는 Edge Function 을 통해서만 쓴다. → 반드시 [NO_BACKEND_POLICY](docs/harness/NO_BACKEND_POLICY.md) 준수
 
 ## 2. 절대 규칙 (Must / Must Not)
 
@@ -57,7 +57,9 @@ src/
 │   ├── forms/InquiryForm   # 파트너십 문의 → EmailJS
 │   └── ui/Modal            # 공통 모달 (ESC/바깥클릭 닫기, 스크롤 잠금)
 ├── hooks/useScrollObserver # <section> 페이드인
+├── services/analytics.ts   # ★ 측정 단일 진입점 (trackPageView/trackEvent → GA4·Supabase·구글 시트)
 └── utils/                  # visitorTracker(방문자 로그 → 관리자 구글 시트, 사이트 UI 없음), a11y(clickableProps)
+supabase/                   # 측정 DB 마이그레이션(SQL) + Edge Function collect (docs/ANALYTICS.md)
 public/                     # 그대로 배포되는 정적 파일 (CNAME, 파비콘, images/)
 scripts/sync_blog.py        # 블로그 RSS → mockData.ts 자동 반영 (GitHub Actions 매시간)
 .github/workflows/          # deploy.yml(배포), sync-blog.yml(블로그 동기화+배포)
@@ -87,5 +89,6 @@ docs/harness/               # ★ 하네스 문서 (아래)
 | [docs/harness/ROADMAP.md](docs/harness/ROADMAP.md) | 확장 계획과 남은 기술부채 |
 | [docs/harness/CHANGELOG.md](docs/harness/CHANGELOG.md) | 구조적 변경 이력 |
 | [docs/PLANNER_GUIDE.md](docs/PLANNER_GUIDE.md) | 비개발자(기획·운영) 작업 가이드 |
-| [docs/VISITOR_LOG.md](docs/VISITOR_LOG.md) | 방문자 로그(구글 시트) 설정·분석·관리 |
+| [docs/ANALYTICS.md](docs/ANALYTICS.md) | 측정(GA4·Supabase Postgres) 설정·이벤트 목록·SQL 분석 |
+| [docs/VISITOR_LOG.md](docs/VISITOR_LOG.md) | 방문자 로그(구글 시트, 병행 후 종료 예정) 설정·분석·관리 |
 | [docs/current_specs.md](docs/current_specs.md) | 현재 화면·기능 명세 |

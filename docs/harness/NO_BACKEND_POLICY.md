@@ -17,7 +17,7 @@
 |-----------|---------------|----------------|
 | 콘텐츠 추가/수정 (포트폴리오, 공지, 언론보도) | `mockData.ts` 수정 → push → 재배포. 블로그 글은 `sync_blog.py` 가 자동 반영 | 관리자 페이지에서 직접 수정하는 CMS 흉내 |
 | 문의/신청 폼 | EmailJS (현재), 또는 Google Forms·Tally·Formspree 임베드 | 폼 데이터를 localStorage 에 저장하고 "접수됨" 표시 |
-| 방문 통계 | Google Apps Script → 관리자 Sheets (현재, [VISITOR_LOG](../VISITOR_LOG.md)). 사이트에 통계 UI 를 두지 않음, 또는 GA4 / Naver Analytics / Cloudflare Web Analytics | 클라이언트 localStorage 로그를 "전체 통계"로 표시 |
+| 방문 통계·행동 데이터 | `src/services/analytics.ts` 한 곳에서 GA4 + Supabase Edge Function(`collect`) → Postgres 로 전송 ([ANALYTICS](../ANALYTICS.md)). 기존 Apps Script → Sheets([VISITOR_LOG](../VISITOR_LOG.md))는 병행 후 종료 예정. 사이트에 통계 UI 를 두지 않음 | 클라이언트 localStorage 로그를 "전체 통계"로 표시 / 브라우저에서 DB 테이블에 직접 insert(anon 쓰기 정책) |
 | 검색 | 번들된 데이터에 대한 클라이언트 필터 (현재) | 서버 검색 API |
 | 로그인/회원/관리자 | **도입하지 않는다.** 필요 시 ROADMAP 의 백엔드 도입 단계로 승격 | 프론트에 하드코딩한 비밀번호로 "관리자 잠금" (누구나 우회 가능) |
 | 예약/결제 | 외부 서비스 링크 또는 임베드 (네이버 예약, 토스페이먼츠 링크결제 등) | 자체 결제 처리 |
@@ -31,6 +31,9 @@
 | EmailJS Service ID / Template ID / **Public** Key | ✅ (EmailJS 설계상 공개용) | `src/config/site.ts` |
 | EmailJS **Private** Key | ❌ 절대 금지 | 사용 안 함 |
 | Google Apps Script 웹앱 URL | ⚠️ 공개됨(번들에 포함). 스팸 POST 가능성 인지 | GitHub Actions Variables `VITE_GOOGLE_SHEET_WEBHOOK_URL` |
+| GA4 측정 ID (`G-…`) | ✅ (설계상 공개값) | GitHub Actions Variables `VITE_GA_MEASUREMENT_ID` |
+| Supabase `collect` 함수 URL | ⚠️ 공개됨. 함수가 Origin·이벤트명·크기 검증 | GitHub Actions Variables `VITE_ANALYTICS_COLLECT_URL` |
+| Supabase **service_role** 키 · DB 비밀번호 | ❌ 절대 금지 (RLS 우회 전권) | Edge Function 런타임 자동 주입 / 개인 비밀번호 관리자. 저장소·`VITE_*` 금지 |
 | GitHub Token | ❌ | Actions 의 `secrets.GITHUB_TOKEN` 만 사용 |
 | `.vscode/mcp.json` 의 `GITHUB_PERSONAL_ACCESS_TOKEN` | ❌ | **빈 값으로 유지. 실제 토큰을 넣고 커밋하지 말 것** |
 
