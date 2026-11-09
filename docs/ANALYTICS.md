@@ -66,6 +66,12 @@ npx supabase functions deploy collect
 - `collect` 는 `supabase/config.toml` 에 따라 **JWT 검증 없이** 배포됩니다 (브라우저 sendBeacon 은 인증 헤더를 못 보냄). 함수 안에서 Origin 허용목록·이벤트명·크기를 검증합니다.
 - 허용 Origin 을 바꾸려면: `npx supabase secrets set ALLOWED_ORIGINS="https://openthe.kr,https://www.openthe.kr"` (기본값과 동일)
 
+> **현재 운영 값 (2026-11-09 설정 완료)**: 조직 `OpenTheShare`(Free), 프로젝트 `openthe-kr-analytics`
+> (ref `forachixmfkdenzzvfog`, Seoul), 수집 URL `https://forachixmfkdenzzvfog.supabase.co/functions/v1/collect`.
+> 최초 적용은 CLI 대신 대시보드로 했음 — 마이그레이션은 SQL Editor 에 붙여 실행, 함수는 Edge Functions → 편집기로 배포 후
+> Settings 에서 **"Verify JWT with legacy secret" OFF** (CLI 로 재배포하면 `config.toml` 의 `verify_jwt = false` 가 적용됨).
+> DB 비밀번호는 생성 시 자동값 → 직접 접속이 필요하면 Project Settings → Database 에서 재설정.
+
 ### ③ 사이트에 연결
 GitHub Variables → `VITE_ANALYTICS_COLLECT_URL` = `https://<project-ref>.supabase.co/functions/v1/collect` → 재배포
 
