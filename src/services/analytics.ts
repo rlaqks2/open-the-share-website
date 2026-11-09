@@ -52,8 +52,10 @@ function loadGa(): void {
             window.dataLayer!.push(arguments);
         };
         window.gtag('js', new Date());
+        // 첫 화면 page_view 는 gtag 가 자동으로 보낸다 (실제 URL·UTM·referrer 포함).
+        // ※ send_page_view:false 를 줘도 실측상 자동 page_view 가 나가 중복되었으므로(2026-11-09) 자동 전송에 맡기고,
+        //    SPA 화면 전환부터 trackPageView 가 직접 보낸다.
         window.gtag('config', GA_ID, {
-            send_page_view: false, // SPA 라 화면 전환 시 trackPageView 로 직접 보냄
             allow_google_signals: false, // 교차 기기 추적·광고 개인화 비활성 (수집 최소화)
             allow_ad_personalization_signals: false,
         });
@@ -122,6 +124,7 @@ function collect(eventName: string, pagePath: string, pageTitle: string, props: 
 }
 
 let currentPage = { path: '/', title: '' };
+let isFirstPageView = true;
 
 /**
  * 화면 전환(가상 페이지뷰). 라우터가 없는 SPA 라서 화면 상태를 경로로 표현합니다.
@@ -130,11 +133,16 @@ let currentPage = { path: '/', title: '' };
  */
 export function trackPageView(path: string, title: string): void {
     currentPage = { path, title };
-    gaSend('page_view', {
-        page_location: `${window.location.origin}${path}`,
-        page_path: path,
-        page_title: title,
-    });
+    if (isFirstPageView) {
+        isFirstPageView = false;
+        loadGa(); // gtag config 가 첫 page_view 를 자동 전송
+    } else {
+        gaSend('page_view', {
+            page_location: `${window.location.origin}${path}`,
+            page_path: path,
+            page_title: title,
+        });
+    }
     collect('page_view', path, title, {});
     void trackVisitor(title); // 기존 구글 시트 로그 (웹훅 미설정 시 동작 안 함)
 }

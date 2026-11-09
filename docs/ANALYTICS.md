@@ -18,7 +18,7 @@
 
 | 이벤트 | 언제 | 파라미터(props) | GA4 에서 |
 |---|---|---|---|
-| `page_view` | 화면 전환 (`/`, `/portfolio?filter=…`) | — | 자동 |
+| `page_view` | GA4: 첫 화면은 gtag 자동 전송(실제 URL·UTM 포함), 이후 화면 전환(`/portfolio?filter=…`)만 코드가 전송 / Postgres: 매 화면 | — | 자동 |
 | `inquiry_open` | 문의 모달 열기 | `source`: header / hero / cta / portfolio_page | |
 | `generate_lead` | 문의 메일 발송 성공 | `org_category`, `program_type` | **주요 이벤트(전환)로 지정** |
 | `inquiry_error` | 문의 발송 실패 | `org_category` | |

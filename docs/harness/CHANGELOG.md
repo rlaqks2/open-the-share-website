@@ -10,6 +10,7 @@
 - 빌드 변수 추가: `VITE_GA_MEASUREMENT_ID`, `VITE_ANALYTICS_COLLECT_URL` (`deploy.yml`, `sync-blog.yml` 둘 다)
 - 개인정보 처리방침: 켜진 도구만 빌드 시점에 고지(GA4 쿠키·거부 방법, Supabase 위탁, 이용 행태 항목)
 - 문서: `docs/ANALYTICS.md` 신설, ARCHITECTURE · NO_BACKEND_POLICY 갱신
+- GA4 운영 연결(`G-HQ1X2K8LNH`, GitHub Variables). 실측 결과 `send_page_view:false` 에도 자동 page_view 가 나가 첫 화면이 2건 집계 → 첫 화면은 gtag 자동 전송에 맡기고 코드는 SPA 전환만 전송하도록 수정
 
 ## 2026-11-09 (3) — 방문자 로그 화면 제거 · 관리자 시트 방식으로 전환
 
