@@ -133,6 +133,8 @@ create policy analytics_reader_select on public.ip_lookups  for select to analyt
 | 항목 | 방법 |
 |---|---|
 | 보유기간 1년 파기 | pg_cron `purge-site-events` 매일 04:00 KST (`select * from cron.job_run_details order by start_time desc limit 5;` 로 확인) |
+| 월별 요약(장기 추세) | `site_monthly_summary` — 개인 식별 불가 월별 합계(전체·유입 경로·기기·화면·문의 버튼별)라 1년 파기 대상 아님. pg_cron `refresh-monthly-summary` 가 매일 03:30 KST 에 지난달~이번 달을 재집계. 원본이 온전한 최근 11개월보다 이전 달은 다시 세지 않음. 수동 재집계: `select refresh_monthly_summary();` (마이그레이션 `20261109120000_monthly_summary.sql`, 2026-11-09 운영 DB 적용 완료) |
+| 대시보드 | claude.ai 아티팩트 "오픈더쉐어 방문 분석" (https://claude.ai/artifact/GK1UVNLRkXtHCdVyVxEEaM) — Supabase 커넥터로 위 테이블을 실시간 조회, 열어 둔 동안 1분마다 갱신 |
 | 삭제 요청 대응 | `delete from site_events where ip = '<IP>' or session_id = '<ID>';` + 같은 IP 의 `ip_lookups` 삭제 |
 | 무료 플랜 일시 중지 | 1주간 활동 없으면 중지됨. 매일 방문이 있으면 보통 문제없음 |
 | 백업 | 무료 플랜은 자동 백업 없음 → 필요해지면 주 1회 `pg_dump` (GitHub Actions + 비공개 저장소) 또는 Pro 전환 |
