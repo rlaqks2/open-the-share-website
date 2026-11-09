@@ -32,7 +32,8 @@ const Header: React.FC<HeaderProps> = ({
         const handleScroll = () => {
             setScrolled(window.scrollY > 10);
         };
-        window.addEventListener('scroll', handleScroll);
+        handleScroll();
+        window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
@@ -82,7 +83,7 @@ const Header: React.FC<HeaderProps> = ({
                         <img
                             src={logoImg}
                             alt={`${mockData.companyInfo.name} 로고`}
-                            className="h-9 md:h-10 w-auto object-contain transition-transform group-hover:scale-102"
+                            className="h-9 md:h-10 w-auto object-contain transition-transform group-hover:scale-[1.02]"
                         />
                     </button>
 

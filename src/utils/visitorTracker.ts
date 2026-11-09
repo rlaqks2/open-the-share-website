@@ -1,32 +1,23 @@
 /**
  * @file visitorTracker.ts
- * @description (주)오픈더쉐어 공식 웹사이트 방문자 데이터 수집 유틸리티
- * 
- * 구글 생태계(Google Sheets / Google Cloud / BigQuery)와의 완벽한 연동을 위해
- * 접속자의 17개 핵심 지표를 자동 수집하여 지정된 구글 시트(Google Apps Script 웹앱)로 전송합니다.
+ * @description 방문자 로그를 수집해 관리자 전용 구글 시트(Google Apps Script 웹앱)로 전송합니다.
+ *
+ * - 사이트 화면에는 방문자 로그 UI 가 없습니다. 데이터 확인·관리는 구글 시트에서만 합니다.
+ *   설정 방법: docs/VISITOR_LOG.md
+ * - 웹훅 URL 은 빌드 시 환경변수 VITE_GOOGLE_SHEET_WEBHOOK_URL 로만 주입됩니다.
+ *   (GitHub 저장소 Settings → Secrets and variables → Actions → Variables)
+ *   설정되지 않았으면 아무것도 수집·전송하지 않습니다 (외부 IP 조회 포함).
+ * - 로컬 개발 서버(npm run dev)에서는 수집하지 않습니다.
+ * - 수집 항목을 바꾸면 src/data/privacyPolicy.ts 와 docs/VISITOR_LOG.md 의 Apps Script 도 함께 수정하세요.
  */
 
-const STORAGE_KEY_WEBHOOK = 'ots_webhook_url';
+const WEBHOOK_URL = (import.meta.env.VITE_GOOGLE_SHEET_WEBHOOK_URL || '').trim();
 
-export function getStoredWebhookUrl(): string {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY_WEBHOOK);
-    if (saved) return saved;
-  } catch {}
-  return import.meta.env.VITE_GOOGLE_SHEET_WEBHOOK_URL || '';
-}
+/** Apps Script 쪽에서 엉뚱한 요청을 걸러내기 위한 사이트 식별값 (비밀값 아님) */
+const SITE_ID = 'openthe.kr';
 
-export function setStoredWebhookUrl(url: string): void {
-  try {
-    if (url) {
-      localStorage.setItem(STORAGE_KEY_WEBHOOK, url);
-    } else {
-      localStorage.removeItem(STORAGE_KEY_WEBHOOK);
-    }
-  } catch {}
-}
-
-export interface VisitorLogData {
+interface VisitorLogData {
+  site: string;
   visited_at: string;
   session_id: string;
   ip_address: string;
@@ -116,29 +107,32 @@ function getKSTTimestamp(): string {
 }
 
 /**
- * 방문자 로그 수집 및 구글 시트로 자동 전송
+ * 방문자 로그 수집 및 구글 시트로 전송
  * @param customPageTitle 페이지명 직접 지정 (생략 시 document.title)
- * @param force 30초 내 중복 전송 방지 무시 여부 (테스트 전송 시 true)
  */
-export async function trackVisitor(customPageTitle?: string, force: boolean = false): Promise<void> {
-  // 개발 모드나 중복 로깅 방지 (동일 페이지에서 30초 내 중복 전송 방지, force=true면 즉시 전송)
+export async function trackVisitor(customPageTitle?: string): Promise<void> {
+  // 웹훅 미설정 또는 로컬 개발 서버 → 수집하지 않음
+  if (!WEBHOOK_URL || import.meta.env.DEV) return;
+
+  // 중복 로깅 방지 (같은 탭에서 30초 내 재전송 안 함)
   const lastTrackedKey = 'ots_last_tracked_time';
-  const lastTracked = sessionStorage.getItem(lastTrackedKey);
   const nowTime = Date.now();
-  if (!force && lastTracked && nowTime - Number(lastTracked) < 30000) {
-    return;
-  }
+  try {
+    const lastTracked = sessionStorage.getItem(lastTrackedKey);
+    if (lastTracked && nowTime - Number(lastTracked) < 30000) return;
+    sessionStorage.setItem(lastTrackedKey, String(nowTime));
+  } catch {}
 
   try {
     const urlParams = new URLSearchParams(window.location.search);
     const utmSource = urlParams.get('utm_source') || urlParams.get('source') || '';
 
-    // 기본 로그 객체 초기화
     const logData: VisitorLogData = {
+      site: SITE_ID,
       visited_at: getKSTTimestamp(),
       session_id: getOrCreateSessionId(),
-      ip_address: '조회 중...',
-      country: 'KR',
+      ip_address: '',
+      country: '',
       region: '',
       city: '',
       org_name: '',
@@ -154,61 +148,38 @@ export async function trackVisitor(customPageTitle?: string, force: boolean = fa
       language: navigator.language || 'ko-KR',
     };
 
-    // 무료 IP 지오로케이션 API로 IP, 도시, 기업/ISP 조회
+    // 무료 IP 지오로케이션 API로 IP, 지역, 기관/ISP 조회 (실패해도 나머지 정보는 전송)
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 3500);
-
-      const res = await fetch('https://ipapi.co/json/', {
-        signal: controller.signal,
-      });
+      const res = await fetch('https://ipapi.co/json/', { signal: controller.signal });
       clearTimeout(timeoutId);
-
       if (res.ok) {
         const geo = await res.json();
         logData.ip_address = geo.ip || '';
-        logData.country = geo.country_name || geo.country || 'KR';
+        logData.country = geo.country_name || geo.country || '';
         logData.region = geo.region || '';
         logData.city = geo.city || '';
         logData.org_name = geo.org || '';
         logData.isp = geo.isp || '';
       }
     } catch {
-      // 보조 백업 IP 조회 (ipify)
       try {
         const res2 = await fetch('https://api.ipify.org?format=json');
-        if (res2.ok) {
-          const data2 = await res2.json();
-          logData.ip_address = data2.ip || '미확인';
-        }
-      } catch {
-        logData.ip_address = '비공개망';
-      }
+        if (res2.ok) logData.ip_address = (await res2.json()).ip || '';
+      } catch {}
     }
 
-    sessionStorage.setItem(lastTrackedKey, String(nowTime));
-
-    // 로컬 스토리지에 최근 방문 로그 50개 보관 (관리자 화면에서 즉시 확인 가능)
-    try {
-      const localLogs: VisitorLogData[] = JSON.parse(localStorage.getItem('ots_local_visitor_logs') || '[]');
-      localLogs.unshift(logData);
-      localStorage.setItem('ots_local_visitor_logs', JSON.stringify(localLogs.slice(0, 50)));
-    } catch {}
-
-    // 구글 스프레드시트 웹앱으로 전송
-    const webhookUrl = getStoredWebhookUrl();
-    if (webhookUrl) {
-      await fetch(webhookUrl, {
-        method: 'POST',
-        mode: 'no-cors', // 구글 앱스 스크립트 웹앱 CORS 허용 모드
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(logData),
-      });
-    }
+    // 구글 Apps Script 웹앱으로 전송 (no-cors: 응답은 읽지 않음, text/plain 으로 보내야 preflight 없이 전달됨)
+    await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(logData),
+      keepalive: true,
+    });
   } catch (err) {
-    // 방문자 로그 전송 실패가 사용자 경험에 일절 영향을 주지 않도록 안전하게 무시
+    // 방문자 로그 실패가 사용자 경험에 영향을 주지 않도록 무시
     console.debug('[OTS Visitor Tracker]', err);
   }
 }

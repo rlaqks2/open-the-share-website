@@ -1,8 +1,9 @@
 /**
  * @file SearchModal.tsx
- * @description 웹사이트 전체 포트폴리오(97건) 및 파트너사를 실시간으로 검색할 수 있는 모달 컴포넌트입니다.
+ * @description 웹사이트 전체 포트폴리오를 제목·파트너명·테마·스토리로 실시간 검색하는 모달 컴포넌트입니다.
+ * ESC 키 또는 바깥 영역 클릭으로 닫히며, 열려 있는 동안 배경 스크롤을 잠급니다.
  */
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { mockData } from '../../data/mockData';
 import { PortfolioItem } from '../../types';
 
@@ -31,6 +32,19 @@ const SearchModal: React.FC<SearchModalProps> = ({
 }) => {
     const [query, setQuery] = useState('');
 
+    // ESC 키로 닫기 + 배경 스크롤 잠금
+    useEffect(() => {
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') onClose();
+        };
+        document.addEventListener('keydown', onKey);
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.removeEventListener('keydown', onKey);
+            document.body.style.overflow = '';
+        };
+    }, [onClose]);
+
     const searchResults = useMemo(() => {
         const q = query.trim().toLowerCase();
         if (!q) return [];
@@ -54,7 +68,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
             aria-modal="true"
             aria-label="포트폴리오 검색창"
         >
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-xs" />
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
             <div
                 className="relative bg-white pt-6 pb-8 shadow-xl animate-slideDown border-b border-slate-200"
                 onClick={(e) => e.stopPropagation()}

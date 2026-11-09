@@ -6,6 +6,12 @@
  */
 import React, { useState } from 'react';
 import emailjs from '@emailjs/browser';
+import { siteConfig } from '../../config/site';
+import { mockData } from '../../data/mockData';
+import { inquiryConsentSummary } from '../../data/privacyPolicy';
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_PATTERN = /^[0-9+\-()\s]{8,20}$/;
 
 interface InquiryFormProps {
     onSubmitted: () => void;
@@ -24,6 +30,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onSubmitted, onError }) => {
         participants: '',
         message: '',
         agree: false,
+        website: '', // 스팸봇 차단용 허니팟 (사람에게는 보이지 않음)
     });
 
     const [validationError, setValidationError] = useState<string | null>(null);
@@ -42,29 +49,46 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onSubmitted, onError }) => {
             return;
         }
 
+        if (!EMAIL_PATTERN.test(form.email.trim())) {
+            setValidationError('이메일 주소 형식을 확인해 주세요. (예: name@company.com)');
+            return;
+        }
+
+        if (!PHONE_PATTERN.test(form.phone.trim())) {
+            setValidationError('연락처 형식을 확인해 주세요. (숫자와 - 만 입력, 예: 010-0000-0000)');
+            return;
+        }
+
         if (!form.agree) {
             setValidationError('개인정보 수집 및 이용에 동의해 주세요.');
             return;
         }
 
+        // 허니팟 필드가 채워져 있으면 봇으로 간주하고 조용히 성공 처리 (메일 미발송)
+        if (form.website) {
+            onSubmitted();
+            return;
+        }
+
         setIsSending(true);
 
-        const SERVICE_ID = 'service_49uwd6l';
-        const TEMPLATE_ID = 'template_pm65did';
-        const PUBLIC_KEY = 'vShddPvGInIVoVMuQ';
+        const { serviceId, templateId, publicKey, toEmail } = siteConfig.emailjs;
 
         const templateParams = {
-            to_email: 'opentheshare@naver.com',
+            to_email: toEmail,
             from_name: form.manager,
             from_company: `[${form.orgCategory}] ${form.company}`,
             from_email: form.email,
+            // EmailJS 템플릿 설정란용: From Name = {{name}}, Reply To = {{email}} (답장 시 고객 이메일로 바로 회신)
+            name: `${form.company} ${form.manager}`,
+            email: form.email,
             phone: form.phone,
             title: `${form.title} (${form.programType} / 예상인원: ${form.participants || '미정'})`,
             message: form.message,
         };
 
         emailjs
-            .send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY)
+            .send(serviceId, templateId, templateParams, publicKey)
             .then(() => {
                 setIsSending(false);
                 onSubmitted();
@@ -75,14 +99,14 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onSubmitted, onError }) => {
                     onError();
                 } else {
                     setValidationError(
-                        '문의 접수 중 일시적인 네트워크 오류가 발생했습니다. 대표전화(031-8039-7034) 또는 이메일(opentheshare@naver.com)로 연락 부탁드립니다.'
+                        `문의 접수 중 일시적인 네트워크 오류가 발생했습니다. 대표전화(${mockData.companyInfo.tel}) 또는 이메일(${mockData.companyInfo.email})로 연락 부탁드립니다.`
                     );
                 }
             });
     };
 
     return (
-        <form onSubmit={onSubmit} className="grid grid-cols-1 gap-4 text-left">
+        <form onSubmit={onSubmit} noValidate className="relative grid grid-cols-1 gap-4 text-left">
             {validationError && (
                 <div
                     role="alert"
@@ -134,6 +158,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onSubmitted, onError }) => {
                     </label>
                     <input
                         id="company"
+                        maxLength={100}
                         value={form.company}
                         onChange={(e) => set('company', e.target.value)}
                         required
@@ -148,6 +173,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onSubmitted, onError }) => {
                     </label>
                     <input
                         id="manager"
+                        maxLength={50}
                         value={form.manager}
                         onChange={(e) => set('manager', e.target.value)}
                         required
@@ -165,6 +191,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onSubmitted, onError }) => {
                     </label>
                     <input
                         id="phone"
+                        maxLength={20}
                         type="tel"
                         value={form.phone}
                         onChange={(e) => set('phone', e.target.value)}
@@ -180,6 +207,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onSubmitted, onError }) => {
                     </label>
                     <input
                         id="email"
+                        maxLength={100}
                         type="email"
                         value={form.email}
                         onChange={(e) => set('email', e.target.value)}
@@ -197,6 +225,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onSubmitted, onError }) => {
                 </label>
                 <input
                     id="participants"
+                    maxLength={200}
                     value={form.participants}
                     onChange={(e) => set('participants', e.target.value)}
                     placeholder="예: 임직원 약 40명 / 2026년 5월 중 희망"
@@ -210,12 +239,36 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onSubmitted, onError }) => {
                 </label>
                 <textarea
                     id="message"
+                    maxLength={3000}
                     value={form.message}
                     onChange={(e) => set('message', e.target.value)}
                     rows={3}
                     placeholder="관심 있는 테마(환경·업사이클링, 목공, 벽화, 요리·베이킹, 기부키트 등)나 예산, 궁금하신 점을 자유롭게 남겨주세요."
                     className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 />
+            </div>
+
+            {/* 허니팟: 화면·스크린리더에서 숨김. 봇만 채움 */}
+            <div aria-hidden="true" className="absolute -left-[9999px] w-px h-px overflow-hidden">
+                <label htmlFor="website">웹사이트</label>
+                <input
+                    id="website"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={form.website}
+                    onChange={(e) => set('website', e.target.value)}
+                />
+            </div>
+
+            {/* 개인정보 수집·이용 고지 (개인정보 보호법 제15조 제2항) */}
+            <div className="rounded-xl bg-slate-50 border border-slate-200 px-4 py-3 text-[11px] leading-relaxed text-slate-600 break-keep">
+                <p className="font-bold text-slate-800 mb-1">개인정보 수집·이용 안내</p>
+                <ul className="space-y-0.5">
+                    <li>· 목적: {inquiryConsentSummary.purpose}</li>
+                    <li>· 항목: {inquiryConsentSummary.items}</li>
+                    <li>· 보유기간: {inquiryConsentSummary.retention}</li>
+                    <li>· {inquiryConsentSummary.refusal}</li>
+                </ul>
             </div>
 
             <div className="flex items-center gap-2 text-xs">
@@ -228,7 +281,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onSubmitted, onError }) => {
                     className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
                 />
                 <label htmlFor="agree" className="text-slate-600 font-medium">
-                    개인정보 수집 및 이용(상담 회신 목적)에 동의합니다.
+                    (필수) 위 개인정보 수집 및 이용에 동의합니다.
                 </label>
             </div>
 

@@ -16,9 +16,8 @@
       "detail": "npm install 실행 후 바로 로컬 미리보기 서버(dev)를 실행합니다."
     },
     {
-      "label": "🚀 Deploy to GitHub Pages",
-      "type": "npm",
-      "script": "deploy",
+      "label": "🚀 빌드 검사 후 배포 (deploy.bat)",
+      "type": "shell",
       "group": {
         "kind": "build",
         "isDefault": true
@@ -30,7 +29,8 @@
         "focus": false,
         "panel": "shared"
       },
-      "detail": "Runs npm run build and publishes dist/ to gh-pages branch"
+      "detail": "git pull → npm run build 검사 → commit/push → GitHub Actions 가 openthe.kr 에 자동 배포",
+      "command": ".\\deploy.bat"
     },
     {
       "label": "⚡ Start Dev Server",
@@ -51,7 +51,9 @@
       "type": "npm",
       "script": "build",
       "group": "build",
-      "problemMatcher": ["$tsc"],
+      "problemMatcher": [
+        "$tsc"
+      ],
       "presentation": {
         "echo": true,
         "reveal": "always",

@@ -22,7 +22,7 @@
 flowchart LR
     A["1. 최신 소스 땡기기\n(Git Pull)"] --> B["2. 미리보기 실행\n(npm run dev)"]
     B --> C["3. 문구/데이터 수정\n(mockData.ts)"]
-    C --> D["4. 웹사이트 바로 배포\n(Ctrl+Shift+B 또는 deploy.bat)"]
+    C --> D["4. 웹사이트 배포\n(deploy.bat 또는 Ctrl+Shift+B)"]
 ```
 
 ---
@@ -75,7 +75,7 @@ git pull origin master
    ```bash
    npm run dev
    ```
-2. 터미널에 나온 주소(`http://localhost:5173/open-the-share-website/`)를 **`Ctrl` 키를 누른 채 클릭**하거나 브라우저 주소창에 복사/붙여넣기합니다.
+2. 터미널에 나온 주소(`http://localhost:5173/`)를 **`Ctrl` 키를 누른 채 클릭**하거나 브라우저 주소창에 복사/붙여넣기합니다.
 3. 이제 코드를 수정하고 **`Ctrl + S` (저장)** 를 누르면, 브라우저가 새로고침 없이 **즉시 변경된 내용**을 보여줍니다.
 4. 작업이 끝나면 터미널 창에서 **`Ctrl + C`** 를 눌러 미리보기를 종료할 수 있습니다.
 
@@ -120,24 +120,30 @@ programs: [
 ```
 
 ### ④ 포트폴리오 추가 또는 수정하기
-* 이미지 주소(`imageUrl`)는 웹 링크나 이미지 주소를 넣으시면 됩니다.
-* 네이버 블로그 링크(`blogLink`)를 넣으면 모달 창의 "블로그 보러가기" 버튼과 연결됩니다.
+* **네이버 공식 블로그에 봉사 후기를 올리면 1시간 안에 자동으로 추가됩니다.** (직접 입력할 필요 없음)
+* 자동 추가된 항목의 참여기관명·인원·분류가 틀렸다면 `mockData.ts` 에서 해당 글을 찾아 고쳐 주세요. (블로그 글 번호 `logNo` 로 검색하면 빠릅니다)
+* 직접 추가할 때는 아래 형식을 그대로 복사해서 쓰세요. 자세한 규칙: [harness/DATA_GUIDE.md](harness/DATA_GUIDE.md)
+  * 사진은 `public/images/portfolio/` 폴더에 `item_번호.jpg` 로 넣습니다. (300KB 이하 권장)
+  * 날짜(`period`)는 반드시 `2026.11.03` 형식으로 씁니다.
+  * `category` 는 `원데이메이킹`, `찾아가는 과학교실`, `스페이스 업사이클링`, `친환경 ESG`, `지역사회 나눔` 중 하나만 씁니다.
 ```typescript
-portfolioItems: [
-  {
-    id: 1,
-    title: "프로젝트 이름",
-    category: "원데이메이킹 사회공헌",
-    imageUrl: "https://images.pexels.com/...",
-    partner: "협력 기업명",
-    period: "2024년 5월",
-    participants: 120,
-    story: "프로젝트에 대한 상세 스토리를 여기에 적습니다.",
-    blogLink: "https://blog.naver.com/..."
-  },
-  // ...
-]
+    {
+      id: 111,
+      title: "○○기업과 함께한 업사이클링 봉사",
+      category: "스페이스 업사이클링",
+      orgType: "기업봉사",
+      partner: "○○기업",
+      period: "2026.11.03",
+      year: "2026",
+      participants: 40,
+      imageUrl: `${BASE_URL}images/portfolio/item_111.jpg`,
+      galleryUrls: [`${BASE_URL}images/portfolio/item_111.jpg`],
+      tags: ["기업봉사", "스페이스 업사이클링"],
+      story: "활동 내용을 2~4문장으로 적습니다.",
+      blogLink: "https://blog.naver.com/5penthe/글번호"
+    },
 ```
+> ⚠️ `portfolioItems: [` 줄과 `] as PortfolioItem[],` 줄은 자동 수집 프로그램이 사용하는 표시이므로 **절대 지우거나 고치지 마세요.**
 
 ### ⑤ FAQ (자주 묻는 질문) 수정/추가하기
 ```typescript
@@ -153,32 +159,26 @@ faqs: [
 
 ---
 
-## 6. 수정 내용 웹사이트에 바로 배포하기
+## 6. 수정 내용 웹사이트에 배포하기
 
-작업이 끝났다면 실제 사이트([https://rlaqks2.github.io/open-the-share-website/](https://rlaqks2.github.io/open-the-share-website/))에 반영합니다.  
-아래 3가지 방법 중 가장 편한 방법을 선택하세요:
+작업이 끝났다면 실제 사이트([https://openthe.kr](https://openthe.kr))에 반영합니다.
+어떤 방법이든 **GitHub 에 올리면(push) GitHub Actions 가 자동으로 빌드·배포**합니다.
 
-### 방법 1. VS Code 단축키 (가장 추천 ⭐)
-* 키보드에서 **`Ctrl + Shift + B`** 누르기
-* 자동으로 빌드 후 `gh-pages`로 배포됩니다.
+### 방법 1. 마우스로 더블클릭 (가장 추천 ⭐)
+* 프로젝트 폴더의 **`deploy.bat`** 더블클릭
+* 순서대로 ① 최신 소스 받기 → ② 오류 검사(빌드) → ③ GitHub 에 올리기 가 진행됩니다.
+* **오류 검사에서 빨간 글씨가 나오면 배포되지 않습니다.** (따옴표·쉼표 실수가 대부분) 메시지에 나온 파일/줄 번호를 확인해 고친 뒤 다시 실행하세요.
 
-### 방법 2. 마우스로 더블클릭
-* 프로젝트 폴더 안에 있는 **`deploy.bat`** 파일을 더블클릭합니다.
-* 자동으로 빌드, 배포, GitHub 커밋/푸시가 진행됩니다.
+### 방법 2. VS Code 단축키
+* **`Ctrl + Shift + B`** → "빌드 검사 후 배포 (deploy.bat)" 실행 (방법 1과 동일)
 
 ### 방법 3. 터미널 명령어
-* 배포만 실행:
-  ```bash
-  npm run deploy
-  ```
-* 배포 + GitHub 소스코드 커밋/푸시까지 한 번에:
-  ```bash
-  npm run ship
-  ```
+```bash
+npm run ship
+```
 
-> ⏱️ 배포 완료 후 약 **1~2분 뒤** [오픈더쉐어 웹사이트](https://rlaqks2.github.io/open-the-share-website/)에 접속하여 새로고침(`Ctrl + F5`)하시면 반영된 화면을 볼 수 있습니다.
-
----
+> ⏱️ 올린 뒤 약 **1~3분** 후 [openthe.kr](https://openthe.kr)에서 `Ctrl + F5`(강력 새로고침)하면 반영됩니다.
+> 진행 상황은 GitHub 저장소 → **Actions** 탭에서 볼 수 있습니다. (초록 ✔ = 성공, 빨강 ✖ = 실패)
 
 ## 7. 자주 하는 실수 & 주의사항
 

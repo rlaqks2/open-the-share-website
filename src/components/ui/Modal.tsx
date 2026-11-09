@@ -40,12 +40,12 @@ const Modal: React.FC<ModalProps> = ({
             document.addEventListener('keydown', onKey);
         } else {
             // 모달이 닫히면 body 스크롤을 다시 허용
-            document.body.style.overflow = 'auto';
+            document.body.style.overflow = '';
         }
 
         // 컴포넌트가 언마운트되거나 open 상태가 변경되기 전에 실행될 클린업(정리) 함수
         return () => {
-            document.body.style.overflow = 'auto';
+            document.body.style.overflow = '';
             document.removeEventListener('keydown', onKey); // 이벤트 리스너 제거
         }
     }, [open, onClose]); // open 또는 onClose가 변경될 때만 이 useEffect를 다시 실행
@@ -58,10 +58,11 @@ const Modal: React.FC<ModalProps> = ({
         <div className="fixed inset-0 z-50 animate-modalFadeIn" aria-labelledby="modal-title" role="dialog" aria-modal="true">
             {/* 반투명 배경. 클릭 시 onClose 함수 호출 */}
             <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-            <div className="absolute inset-0 flex items-center justify-center p-4">
+            {/* 모바일 등 화면보다 콘텐츠가 길 때도 스크롤로 끝까지 볼 수 있도록 overflow-y-auto + max-h 적용 */}
+            <div className="absolute inset-0 flex items-center justify-center p-4 overflow-y-auto" onClick={onClose}>
                 <div
                     // 전달받은 props에 따라 동적으로 클래스 적용
-                    className={`relative w-full ${maxWidth} rounded-2xl bg-white shadow-xl ${noPadding ? '' : 'p-6'}`}
+                    className={`relative w-full ${maxWidth} max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl bg-white shadow-xl ${noPadding ? '' : 'p-6'}`}
                     role="document"
                     // 모달 콘텐츠 영역 클릭 시 이벤트가 배경으로 전파되는 것을 막음(이벤트 버블링 방지)
                     onClick={(e) => e.stopPropagation()}

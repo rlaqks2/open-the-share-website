@@ -7,6 +7,7 @@
 import React, { useState, useMemo } from 'react';
 import { mockData } from '../../data/mockData';
 import { PortfolioItem } from '../../types';
+import { clickableProps } from '../../utils/a11y';
 
 interface PortfolioSectionProps {
     onPortfolioItemClick: (item: PortfolioItem) => void;
@@ -130,7 +131,7 @@ const PortfolioSection: React.FC<PortfolioSectionProps> = ({
                     {previewItems.map((item) => (
                         <article
                             key={item.id}
-                            onClick={() => onPortfolioItemClick(item)}
+                            {...clickableProps(() => onPortfolioItemClick(item), `${item.title} 상세 보기`)}
                             className="group bg-white rounded-3xl overflow-hidden border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col cursor-pointer min-w-0"
                         >
                             {/* 썸네일 영역 */}

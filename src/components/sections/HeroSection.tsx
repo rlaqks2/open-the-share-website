@@ -9,13 +9,17 @@ import React from 'react';
 import { mockData } from '../../data/mockData';
 import onnonIcon from '../../assets/b_onnon.png';
 import ontingIcon from '../../assets/b_onting.png';
+import { PortfolioItem } from '../../types';
+import { clickableProps } from '../../utils/a11y';
 
 interface HeroSectionProps {
     onInquiryClick: () => void;
     onPortfolioPageClick: () => void;
+    /** 최근 스토리 카드 클릭 시 해당 포트폴리오 상세 모달 열기 (없으면 포트폴리오 페이지로 이동) */
+    onPortfolioItemClick?: (item: PortfolioItem) => void;
 }
 
-const HeroSection: React.FC<HeroSectionProps> = ({ onInquiryClick, onPortfolioPageClick }) => {
+const HeroSection: React.FC<HeroSectionProps> = ({ onInquiryClick, onPortfolioPageClick, onPortfolioItemClick }) => {
     const { hero, portfolioItems } = mockData;
     const latestItems = [...portfolioItems]
         .sort((a, b) => b.period.localeCompare(a.period))
@@ -149,12 +153,17 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onInquiryClick, onPortfolioPa
                                 {latestItems.map((item) => (
                                     <div
                                         key={item.id}
-                                        onClick={onPortfolioPageClick}
+                                        {...clickableProps(
+                                            () => (onPortfolioItemClick ? onPortfolioItemClick(item) : onPortfolioPageClick()),
+                                            `${item.title} 상세 보기`
+                                        )}
                                         className="group flex items-center gap-3.5 p-2.5 rounded-2xl hover:bg-slate-50 transition-colors cursor-pointer min-w-0"
                                     >
                                         <img
                                             src={item.imageUrl}
                                             alt={item.title}
+                                            width={64}
+                                            height={64}
                                             className="w-16 h-16 rounded-xl object-cover shrink-0 border border-slate-100 bg-slate-100"
                                         />
                                         <div className="min-w-0 flex-1">

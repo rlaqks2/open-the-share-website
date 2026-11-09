@@ -6,19 +6,16 @@
   html {
     @apply scroll-smooth;
   }
+  /* sticky 헤더(약 72px)에 섹션 제목이 가려지지 않도록 앵커 이동 시 여백 확보 */
+  section[id] {
+    scroll-margin-top: 80px;
+  }
   body {
     @apply bg-white text-slate-800;
     font-family: 'Pretendard', 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     word-break: keep-all;
     overflow-wrap: break-word;
   }
-}
-
-.group:hover .group-hover\:block {
-  display: block;
-}
-.group:hover .group-hover\:text-emerald-600 {
-  color: #059669;
 }
 
 @keyframes fadeIn {
@@ -72,4 +69,23 @@
   background-color: #f8fafc;
   background-image: radial-gradient(#d1fae5 1px, transparent 1px);
   background-size: 16px 16px;
+}
+
+/* 접근성: '동작 줄이기' 설정 사용자에게는 애니메이션/스크롤 효과를 끕니다. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .fade-in-section,
+  .fade-in-section.is-visible {
+    opacity: 1;
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

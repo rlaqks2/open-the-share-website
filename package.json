@@ -3,14 +3,16 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://rlaqks2.github.io/open-the-share-website/",
+  "homepage": "https://openthe.kr/",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "typecheck": "tsc --noEmit",
     "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist",
-    "ship": "npm run deploy && git add . && git commit -m \"update site\" && git push origin master"
+    "sync:blog": "python scripts/sync_blog.py",
+    "ship": "git pull --rebase --autostash origin master && npm run build && git add -A && git commit -m \"update site\" && git push origin master",
+    "deploy": "npm run ship",
+    "deploy:manual": "npm run build && gh-pages -d dist"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",

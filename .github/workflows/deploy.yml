@@ -1,7 +1,12 @@
 name: Deploy to GitHub Pages
 
+# 사이트 배포의 "유일한" 공식 경로입니다. master 에 push 되면 빌드 후 gh-pages 브랜치로 배포합니다.
+# (로컬에서 gh-pages 로 직접 올리는 npm run deploy:manual 은 비상용)
 on:
   push:
+    branches:
+      - master
+  pull_request:
     branches:
       - master
   workflow_dispatch:
@@ -33,9 +38,15 @@ jobs:
 
       - name: Build project
         run: npm run build
+        env:
+          # GitHub 저장소 Settings > Secrets and variables > Actions > Variables 에 등록 (선택)
+          VITE_GOOGLE_SHEET_WEBHOOK_URL: ${{ vars.VITE_GOOGLE_SHEET_WEBHOOK_URL }}
 
+      # PR 에서는 빌드 검사만 하고 배포하지 않습니다.
       - name: Deploy to gh-pages branch
+        if: github.event_name != 'pull_request'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
+          cname: openthe.kr

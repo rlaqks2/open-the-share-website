@@ -1,8 +1,20 @@
 """
 @file sync_blog.py
 @description 네이버 공식 블로그(https://blog.naver.com/5penthe)에서 새로운 글을 탐지하여
+<<<<<<< Updated upstream
 1) 오픈더쉐어 포트폴리오(나눔 스토리) 자동 수집 및 이미지 다운로드
 2) 언론보도(보도자료) 포스트 탐지 및 실제 언론사 원문 기사 URL 추출 후 src/data/mockData.ts에 자동 반영하는 스크립트입니다.
+=======
+오픈더쉐어 관련 포트폴리오(기업/단체 사회공헌, 온앤온, 온팅, 과학교실, 업사이클링 등)만
+선별 수집하고, 썸네일 이미지를 다운로드한 뒤 src/data/mockData.ts에 시간순 정렬하여 자동 반영하는 스크립트입니다.
+
+⚠️ 이 스크립트는 mockData.ts 의 아래 두 "마커" 문자열에 의존합니다. 절대 이름/들여쓰기를 바꾸지 마세요.
+   - "  portfolioItems: ["
+   - "  ] as PortfolioItem[],"
+   (docs/harness/DATA_GUIDE.md 참고)
+
+로컬 실행:  python scripts/sync_blog.py   (pillow 설치 시 썸네일 자동 리사이즈: pip install pillow)
+>>>>>>> Stashed changes
 """
 
 import os
@@ -20,6 +32,41 @@ PORTFOLIO_IMG_DIR = os.path.join(ROOT_DIR, "public", "images", "portfolio")
 
 RSS_URL = "https://rss.blog.naver.com/5penthe.xml"
 BLOG_USER = "5penthe"
+
+# 썸네일 최적화 기준 (원본 블로그 이미지가 600KB~800KB 이상인 경우가 많아 페이지 로딩이 느려짐)
+THUMB_MAX_WIDTH = 1200
+THUMB_JPEG_QUALITY = 82
+
+
+def optimize_thumbnail(img_bytes: bytes) -> bytes:
+    """Pillow 가 설치되어 있으면 가로 최대 1200px, JPEG 품질 82 로 재압축합니다. 실패/미설치 시 원본 그대로 반환."""
+    try:
+        from io import BytesIO
+        from PIL import Image, ImageOps
+    except ImportError:
+        print("  (pillow 미설치: 썸네일 원본 저장)")
+        return img_bytes
+    try:
+        im = Image.open(BytesIO(img_bytes))
+        im = ImageOps.exif_transpose(im)
+        if im.mode in ("RGBA", "LA", "P"):
+            # 투명 영역이 검게 변하지 않도록 흰 배경 위에 합성
+            rgba = im.convert("RGBA")
+            bg = Image.new("RGB", rgba.size, (255, 255, 255))
+            bg.paste(rgba, mask=rgba.getchannel("A"))
+            im = bg
+        elif im.mode not in ("RGB", "L"):
+            im = im.convert("RGB")
+        if im.width > THUMB_MAX_WIDTH:
+            ratio = THUMB_MAX_WIDTH / im.width
+            im = im.resize((THUMB_MAX_WIDTH, round(im.height * ratio)), Image.LANCZOS)
+        out = BytesIO()
+        im.save(out, format="JPEG", quality=THUMB_JPEG_QUALITY, optimize=True, progressive=True)
+        optimized = out.getvalue()
+        return optimized if len(optimized) < len(img_bytes) else img_bytes
+    except Exception as e:  # 손상 이미지 등
+        print(f"  (썸네일 최적화 실패, 원본 저장: {e})")
+        return img_bytes
 
 def clean_text(text: str) -> str:
     if not text:
@@ -254,13 +301,21 @@ def main():
         print(f"Error fetching RSS: {e}")
         return
 
-    root = ET.fromstring(xml_data)
+    try:
+        root = ET.fromstring(xml_data)
+    except ET.ParseError as e:
+        print(f"Error parsing RSS XML: {e}")
+        return
     items = root.findall(".//item")
     print(f"Found {len(items)} posts in RSS feed.")
 
     mock_txt = open(MOCKDATA_PATH, "r", encoding="utf-8").read()
     existing_log_nos = set(int(x) for x in re.findall(r"logNo:\s*(\d+)", mock_txt))
-    existing_ids = [int(x) for x in re.findall(r"id:\s*(\d+)", mock_txt)]
+    # 포트폴리오 블록 안의 id 만 집계 (pressReleases/faqs 등 다른 배열의 id 와 섞이지 않도록)
+    p_start = mock_txt.find("  portfolioItems: [")
+    p_end = mock_txt.find("  ] as PortfolioItem[],", p_start)
+    portfolio_block = mock_txt[p_start:p_end] if p_start != -1 and p_end != -1 else mock_txt
+    existing_ids = [int(x) for x in re.findall(r"\bid:\s*(\d+)", portfolio_block)]
     max_id = max(existing_ids) if existing_ids else 110
 
     # 기존 언론보도 링크 확인 (중복 등록 방지)
@@ -353,7 +408,7 @@ def main():
                 "Referer": "https://blog.naver.com/"
             })
             with urllib.request.urlopen(img_req, timeout=15) as img_resp:
-                img_bytes = img_resp.read()
+                img_bytes = optimize_thumbnail(img_resp.read())
             with open(local_path, "wb") as f_img:
                 f_img.write(img_bytes)
             print(f"Downloaded thumbnail -> {local_filename} ({len(img_bytes)} bytes)")

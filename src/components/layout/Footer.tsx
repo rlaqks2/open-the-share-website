@@ -8,13 +8,46 @@ import React from 'react';
 import { mockData } from '../../data/mockData';
 import footerLogoImg from '../../assets/footer_logo.png';
 
+/* 공식 채널 로고 아이콘 (인라인 SVG — 외부 이미지 요청 없음, currentColor 로 색 전환) */
+const YouTubeIcon = () => (
+    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+    </svg>
+);
+
+const InstagramIcon = () => (
+    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+        <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" />
+        <circle cx="12" cy="12" r="4.25" />
+        <circle cx="17.6" cy="6.4" r="1.1" fill="currentColor" stroke="none" />
+    </svg>
+);
+
+const FacebookIcon = () => (
+    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z" />
+    </svg>
+);
+
+const SOCIAL_LINKS = [
+    { key: 'youtube', label: 'YouTube', hoverClass: 'hover:bg-[#FF0000]', Icon: YouTubeIcon },
+    {
+        key: 'instagram',
+        label: 'Instagram',
+        hoverClass: 'hover:bg-gradient-to-tr hover:from-[#FEDA75] hover:via-[#D62976] hover:to-[#4F5BD5]',
+        Icon: InstagramIcon,
+    },
+    { key: 'facebook', label: 'Facebook', hoverClass: 'hover:bg-[#1877F2]', Icon: FacebookIcon },
+] as const;
+
 interface FooterProps {
     onNavigateHome?: (sectionId?: string) => void;
     onNavigatePortfolio?: () => void;
-    onOpenVisitorLog?: () => void;
+    /** 개인정보 처리방침 모달 열기 */
+    onOpenPrivacy?: () => void;
 }
 
-const Footer: React.FC<FooterProps> = ({ onNavigateHome, onNavigatePortfolio, onOpenVisitorLog }) => {
+const Footer: React.FC<FooterProps> = ({ onNavigateHome, onNavigatePortfolio, onOpenPrivacy }) => {
     const { companyInfo, partners, portfolioItems } = mockData;
 
     return (
@@ -106,33 +139,22 @@ const Footer: React.FC<FooterProps> = ({ onNavigateHome, onNavigatePortfolio, on
                                 className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-[#03C75A]/15 text-[#03C75A] hover:bg-[#03C75A] hover:text-white font-bold transition-colors whitespace-nowrap"
                             >
                                 <span className="w-2 h-2 rounded-full bg-current shrink-0"></span>
-                                <span>네이버 공식 블로그 (5penthe)</span>
+                                <span>네이버 공식 블로그</span>
                             </a>
-                            <div className="flex flex-wrap items-center gap-2 pt-2">
-                                <a
-                                    href={companyInfo.socials.youtube}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition-colors whitespace-nowrap"
-                                >
-                                    YouTube
-                                </a>
-                                <a
-                                    href={companyInfo.socials.instagram}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition-colors whitespace-nowrap"
-                                >
-                                    Instagram
-                                </a>
-                                <a
-                                    href={companyInfo.socials.facebook}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition-colors whitespace-nowrap"
-                                >
-                                    Facebook
-                                </a>
+                            <div className="flex items-center gap-2.5 pt-2">
+                                {SOCIAL_LINKS.map(({ key, label, hoverClass, Icon }) => (
+                                    <a
+                                        key={key}
+                                        href={companyInfo.socials[key]}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        aria-label={`오픈더쉐어 ${label} (새 창)`}
+                                        title={label}
+                                        className={`w-11 h-11 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center transition-all hover:text-white hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 ${hoverClass}`}
+                                    >
+                                        <Icon />
+                                    </a>
+                                ))}
                             </div>
                         </div>
                     </div>
@@ -151,17 +173,16 @@ const Footer: React.FC<FooterProps> = ({ onNavigateHome, onNavigatePortfolio, on
                         </p>
                     </div>
                     <div className="flex items-center gap-4 text-xs text-slate-500 whitespace-nowrap shrink-0">
-                        <span>&copy; {new Date().getFullYear()} OPEN THE SHARE Inc. All Rights Reserved.</span>
-                        {onOpenVisitorLog && (
+                        {onOpenPrivacy && (
                             <button
-                                onClick={onOpenVisitorLog}
-                                className="text-slate-500 hover:text-emerald-400 transition-colors flex items-center gap-1 text-[11px] px-2 py-0.5 rounded border border-slate-800 hover:border-slate-700 bg-slate-900/60"
-                                title="실시간 사이트 방문자 로그 및 통계 (단축키: Ctrl+Shift+L)"
+                                type="button"
+                                onClick={onOpenPrivacy}
+                                className="font-bold text-slate-200 hover:text-white underline-offset-4 hover:underline transition-colors"
                             >
-                                <span>📊</span>
-                                <span>방문자 로그</span>
+                                개인정보처리방침
                             </button>
                         )}
+                        <span>&copy; {new Date().getFullYear()} OPEN THE SHARE Inc. All Rights Reserved.</span>
                     </div>
                 </div>
             </div>

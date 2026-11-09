@@ -32,6 +32,7 @@ jobs:
 
       - name: Install Python dependencies
         run: |
+          # pillow: 블로그 썸네일 리사이즈/압축용 (sync_blog.py)
           pip install pillow
 
       - name: Run Blog Post Sync Script
@@ -56,6 +57,8 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add public/images/portfolio/ src/data/mockData.ts
           git commit -m "chore(auto-sync): update portfolio with new blog posts [skip ci]"
+          # 사람이 그 사이 push 한 커밋이 있어도 실패하지 않도록 rebase 후 push
+          git pull --rebase origin master
           git push origin master
 
       - name: Setup Node.js
@@ -72,6 +75,8 @@ jobs:
       - name: Build project
         if: steps.check_changes.outputs.has_changes == 'true'
         run: npm run build
+        env:
+          VITE_GOOGLE_SHEET_WEBHOOK_URL: ${{ vars.VITE_GOOGLE_SHEET_WEBHOOK_URL }}
 
       - name: Deploy to GitHub Pages (gh-pages)
         if: steps.check_changes.outputs.has_changes == 'true'
@@ -79,3 +84,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
+          cname: openthe.kr

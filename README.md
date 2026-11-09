@@ -1,47 +1,49 @@
-# OpenThe Share - 기업 사회공헌 프로그램 전문 파트너
+# OPEN THE SHARE (오픈더쉐어) 공식 웹사이트
 
-본 프로젝트는 기업의 사회공헌 및 ESG 경영 프로그램을 전문으로 하는 "OpenThe Share"의 공식 웹사이트 랜딩 페이지입니다. React, TypeScript, Tailwind CSS를 사용하여 구축된 모던하고 반응형인 웹 애플리케이션입니다.
+기업·단체 단위 사회공헌(봉사) 프로그램을 기획·운영하는 **(주)오픈더쉐어**의 공식 사이트입니다.
+기업 소개, 기업·단체 봉사 히스토리(포트폴리오) 공유, 파트너십 문의 접수를 담당합니다.
 
-* 🌐 **배포 사이트**: [https://rlaqks2.github.io/open-the-share-website/](https://rlaqks2.github.io/open-the-share-website/)
-* 📘 **기획자/비개발자 작업 가이드**: [docs/PLANNER_GUIDE.md](docs/PLANNER_GUIDE.md) (문구 수정, 이미지 교체, 실시간 미리보기 및 배포법)
-* 📋 **기획 명세서**: [docs/current_specs.md](docs/current_specs.md)
+* 🌐 **운영 사이트**: [https://openthe.kr](https://openthe.kr)
+* 🤖 **작업 규칙(하네스)**: [CLAUDE.md](CLAUDE.md) → [docs/harness/](docs/harness/README.md)
+* 📘 **기획자/비개발자 가이드**: [docs/PLANNER_GUIDE.md](docs/PLANNER_GUIDE.md)
+* 📋 **현재 기능 명세**: [docs/current_specs.md](docs/current_specs.md)
+
+**스택**: React 18 · TypeScript · Vite 5 · Tailwind CSS 3 · GitHub Pages (정적 사이트, 백엔드 없음)
 
 ---
 
-## 🚀 빠른 시작 (Quick Start)
+## 🚀 빠른 시작
 
-### 1. 개발 서버 실행 (실시간 미리보기)
 ```bash
 npm install
-npm run dev
+npm run dev        # http://localhost:5173/
 ```
 
-### 2. GitHub Pages 즉시 배포
-* **VS Code 단축키**: `Ctrl + Shift + B` (자동 빌드 후 배포)
-* **스크립트 더블클릭**: 프로젝트 루트의 `deploy.bat` 실행
-* **터미널 명령어**:
-  ```bash
-  npm run deploy   # 빌드 후 gh-pages 브랜치로 배포
-  npm run ship     # 배포 + Git 변경사항 자동 커밋/푸시
-  ```
+| 명령 | 설명 |
+|------|------|
+| `npm run build` | 타입체크 + 프로덕션 빌드 (커밋 전 필수) |
+| `npm run preview` | 빌드 결과 미리보기 |
+| `npm run sync:blog` | 네이버 블로그 새 글 → 포트폴리오 반영 (Python 3) |
+| `npm run ship` / `deploy.bat` | pull → 빌드 검사 → commit → push → **GitHub Actions 가 자동 배포** |
 
----
+## 🔄 자동화
 
-## 📂 소스 코드 구조
+- **배포**: `master` 에 push 하면 `.github/workflows/deploy.yml` 이 빌드 후 `gh-pages` 로 배포 (openthe.kr)
+- **블로그 동기화**: `.github/workflows/sync-blog.yml` 이 매시간 [공식 블로그](https://blog.naver.com/5penthe) RSS 를 확인해 새 봉사 후기를 포트폴리오에 자동 추가·배포
+
+## 📂 구조
 
 ```
-/
-├── .github/workflows/   # GitHub Actions 자동 배포 워크플로우
-├── .vscode/             # VS Code 작업(Task), MCP 설정
-├── docs/                # 기획 문서 및 기획자용 작업 가이드
-│   ├── current_specs.md # 최신 기획 명세서
-│   └── PLANNER_GUIDE.md # 기획자/비개발자 소스 수정 & 배포 가이드
-├── src/
-│   ├── components/      # React 컴포넌트 (sections, modals, layout, ui)
-│   ├── data/            # 텍스트, FAQ, 포트폴리오 등 정적 데이터 (mockData.ts)
-│   ├── hooks/           # 커스텀 훅
-│   └── types.ts         # TypeScript 타입 정의
-├── deploy.bat           # 원클릭 빌드 & 배포 배치파일
-├── package.json         # 의존성 및 스크립트 정의
-└── vite.config.ts       # Vite 번들러 설정
+src/
+├── App.tsx            # 화면/모달 상태 관리
+├── config/site.ts     # 외부 서비스 설정 (공개값만)
+├── data/mockData.ts   # ★ 사이트 콘텐츠 전체 (문구·포트폴리오·파트너·FAQ·회사정보)
+├── components/        # layout · sections · pages · modals · forms · ui
+├── hooks/ utils/      # 스크롤 애니메이션, 방문자 로그, 접근성 헬퍼
+public/                # CNAME, 파비콘, images/(portfolio, partners)
+scripts/sync_blog.py   # 블로그 → 포트폴리오 동기화
+docs/                  # 기획 문서 + harness/(작업 규칙)
+.claude/commands/      # 에이전트 슬래시 커맨드
 ```
+
+자세한 구조는 [docs/harness/ARCHITECTURE.md](docs/harness/ARCHITECTURE.md) 를 참고하세요.
