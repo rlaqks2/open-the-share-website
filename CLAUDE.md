@@ -90,5 +90,6 @@ docs/harness/               # ★ 하네스 문서 (아래)
 | [docs/harness/CHANGELOG.md](docs/harness/CHANGELOG.md) | 구조적 변경 이력 |
 | [docs/PLANNER_GUIDE.md](docs/PLANNER_GUIDE.md) | 비개발자(기획·운영) 작업 가이드 |
 | [docs/ANALYTICS.md](docs/ANALYTICS.md) | 측정(GA4·Supabase Postgres) 설정·이벤트 목록·SQL 분석 |
+| [docs/DATA_COLLECTED.md](docs/DATA_COLLECTED.md) | 수집 데이터 전체 명세 (테이블·컬럼·GA4 항목·브라우저 저장값) — 수집 항목 변경 시 함께 수정 |
 | [docs/VISITOR_LOG.md](docs/VISITOR_LOG.md) | 방문자 로그(구글 시트, 병행 후 종료 예정) 설정·분석·관리 |
 | [docs/current_specs.md](docs/current_specs.md) | 현재 화면·기능 명세 |
