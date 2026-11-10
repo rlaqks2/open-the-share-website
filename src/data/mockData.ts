@@ -1920,6 +1920,42 @@ export const mockData = {
   pressReleases: [
     {
       id: 999,
+      title: "한국무라타전자, 임직원 72명 참여…복지관 노후시설 개선 봉사",
+      date: "2026.11.10",
+      source: "내외경제TV",
+      category: "원데이메이킹",
+      summary: " 한국무라타전자, 임직원 72명 참여…복지관 노후시설 개선 봉사",
+      link: "https://www.nbntv.co.kr/news/articleView.html?idxno&#x3D;4026865"
+    },
+    {
+      id: 999,
+      title: "한국무라타전자, 지역 아동과 함께하는 참여형 사회공헌 ‘사랑의 베이킹 클래스’ 성료",
+      date: "2026.11.10",
+      source: "데일리경제",
+      category: "원데이메이킹",
+      summary: "한국무라타전자, 지역 아동과 함께하는 참여형 사회공헌 ‘사랑의 베이킹 클래스’ 성료",
+      link: "https://www.kdpress.co.kr/news/articleView.html?idxno&#x3D;207558"
+    },
+    {
+      id: 999,
+      title: "한국무라타전자, 과학 인재 육성을 위한 STEAM 교육 ‘찾아가는 과학교실’ 성료",
+      date: "2026.11.10",
+      source: "데일리경제",
+      category: "찾아가는 과학교실",
+      summary: "한국무라타전자, 과학 인재 육성을 위한 STEAM 교육 ‘찾아가는 과학교실’ 성료",
+      link: "https://www.kdpress.co.kr/news/articleView.html?idxno&#x3D;202359"
+    },
+    {
+      id: 999,
+      title: "한국무라타전자, ‘사랑의 김장 나눔’으로 지역 어르신에게 따뜻한 온정 전달",
+      date: "2026.11.10",
+      source: "내외경제TV",
+      category: "지역사회 나눔",
+      summary: "한국무라타전자, ‘사랑의 김장 나눔’으로 지역 어르신에게 따뜻한 온정 전달",
+      link: "https://www.nbntv.co.kr/news/articleView.html?idxno&#x3D;4013055"
+    },
+    {
+      id: 999,
       title: "한국무라타전자, 깨끗한 하천을 위한 작은 실천 ‘EM 흙공 만들기’ 사회공헌활동 진행",
       date: "2026.06.11",
       source: "시민일보",
