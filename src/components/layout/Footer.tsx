@@ -7,6 +7,14 @@
 import React from 'react';
 import { mockData } from '../../data/mockData';
 import footerLogoImg from '../../assets/footer_logo.png';
+import { trackEvent } from '../../services/analytics';
+
+/** 전화번호 → tel: 링크 값 (숫자·+ 만 남김) */
+const telHref = (n: string) => `tel:${n.replace(/[^0-9+]/g, '')}`;
+
+/** 폼 밖 문의 경로 측정: 어떤 연락 수단을 어디서 눌렀는지만 기록 (번호·주소 자체는 보내지 않음) */
+const trackContact = (channel: 'tel' | 'mobile' | 'email', location: string) => () =>
+    trackEvent('contact_click', { channel, location });
 
 /* 공식 채널 로고 아이콘 (인라인 SVG — 외부 이미지 요청 없음, currentColor 로 색 전환) */
 const YouTubeIcon = () => (
@@ -120,10 +128,36 @@ const Footer: React.FC<FooterProps> = ({ onNavigateHome, onNavigatePortfolio, on
                     <div>
                         <h4 className="font-bold text-white mb-4 text-sm uppercase tracking-wider">파트너십 상담센터</h4>
                         <div className="space-y-2 text-sm text-slate-400">
-                            <p className="text-lg font-extrabold text-white whitespace-nowrap">{companyInfo.tel}</p>
-                            <p className="whitespace-nowrap">휴대전화 : {companyInfo.mobile}</p>
+                            <p className="text-lg font-extrabold text-white whitespace-nowrap">
+                                <a
+                                    href={telHref(companyInfo.tel)}
+                                    onClick={trackContact('tel', 'footer')}
+                                    className="hover:text-emerald-400 transition-colors"
+                                >
+                                    {companyInfo.tel}
+                                </a>
+                            </p>
+                            <p className="whitespace-nowrap">
+                                휴대전화 :{' '}
+                                <a
+                                    href={telHref(companyInfo.mobile)}
+                                    onClick={trackContact('mobile', 'footer')}
+                                    className="hover:text-emerald-400 transition-colors"
+                                >
+                                    {companyInfo.mobile}
+                                </a>
+                            </p>
                             <p className="whitespace-nowrap">팩스 : {companyInfo.fax}</p>
-                            <p className="break-all">이메일 : {companyInfo.email}</p>
+                            <p className="break-all">
+                                이메일 :{' '}
+                                <a
+                                    href={`mailto:${companyInfo.email}`}
+                                    onClick={trackContact('email', 'footer')}
+                                    className="hover:text-emerald-400 transition-colors"
+                                >
+                                    {companyInfo.email}
+                                </a>
+                            </p>
                             <p className="text-xs text-slate-500 pt-1">평일 09:00 - 18:00 (주말·공휴일 휴무)</p>
                         </div>
                     </div>

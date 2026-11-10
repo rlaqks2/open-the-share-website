@@ -4,7 +4,7 @@
  * 단체 유형(기업/관공서/학교/기타), 희망 방식(대면 온앤온 / 비대면 온팅), 예상 인원 등을 포함하며,
  * 브라우저 기본 alert() 대신 인라인 상태 메시지를 사용하여 보안 및 UX 가이드라인을 준수합니다.
  */
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import emailjs from '@emailjs/browser';
 import { siteConfig } from '../../config/site';
 import { mockData } from '../../data/mockData';
@@ -13,6 +13,31 @@ import { trackEvent } from '../../services/analytics';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_PATTERN = /^[0-9+\-()\s]{8,20}$/;
+
+/** "어떻게 알게 되셨나요?" 선택지 — 값은 측정(generate_lead.referral)과 메일에 그대로 쓰입니다. */
+const REFERRAL_OPTIONS = [
+    '네이버 검색',
+    '구글 등 기타 검색',
+    '네이버 블로그',
+    'SNS (인스타그램·유튜브 등)',
+    '지인·동료 추천',
+    '이전에 참여해 본 경험',
+    '행사·박람회·제안서',
+    '언론 보도',
+    '기타',
+] as const;
+
+/**
+ * 문의 식별번호. 측정 이벤트(generate_lead.lead_id)와 문의 메일에 같은 값을 넣어,
+ * 담당자가 메일의 번호로 미팅·계약 결과를 기록하면 유입 채널과 연결해 볼 수 있습니다. (개인정보 아님)
+ * 형식: L + YYMMDD + '-' + 영숫자 4자  예) L261110-7K2Q
+ */
+function createLeadId(): string {
+    const d = new Date();
+    const ymd = `${String(d.getFullYear()).slice(2)}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+    const rand = Math.random().toString(36).slice(2, 6).toUpperCase().padEnd(4, '0');
+    return `L${ymd}-${rand}`;
+}
 
 interface InquiryFormProps {
     onSubmitted: () => void;
@@ -29,6 +54,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onSubmitted, onError }) => {
         phone: '',
         email: '',
         participants: '',
+        referral: '',
         message: '',
         agree: false,
         website: '', // 스팸봇 차단용 허니팟 (사람에게는 보이지 않음)
@@ -36,8 +62,14 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onSubmitted, onError }) => {
 
     const [validationError, setValidationError] = useState<string | null>(null);
     const [isSending, setIsSending] = useState(false);
+    const formStarted = useRef(false);
 
     const set = (key: string, value: string | boolean) => {
+        // 폼에 처음 손댄 순간 1회만 기록 (허니팟 입력은 제외)
+        if (!formStarted.current && key !== 'website') {
+            formStarted.current = true;
+            trackEvent('form_start', { first_field: key });
+        }
         setValidationError(null);
         setForm((prev) => ({ ...prev, [key]: value }));
     };
@@ -74,8 +106,12 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onSubmitted, onError }) => {
         setIsSending(true);
 
         const { serviceId, templateId, publicKey, toEmail } = siteConfig.emailjs;
+        const leadId = createLeadId();
+        const referral = form.referral || '미선택';
 
         const templateParams = {
+            lead_id: leadId,
+            referral,
             to_email: toEmail,
             from_name: form.manager,
             from_company: `[${form.orgCategory}] ${form.company}`,
@@ -84,21 +120,27 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onSubmitted, onError }) => {
             name: `${form.company} ${form.manager}`,
             email: form.email,
             phone: form.phone,
-            title: `${form.title} (${form.programType} / 예상인원: ${form.participants || '미정'})`,
-            message: form.message,
+            // 템플릿을 고치지 않아도 메일 제목·본문에 식별번호와 유입 경로가 보이도록 기존 필드에 덧붙인다
+            title: `[${leadId}] ${form.title} (${form.programType} / 예상인원: ${form.participants || '미정'})`,
+            message: `${form.message}\n\n---\n문의번호: ${leadId}\n알게 된 경로: ${referral}`,
         };
 
         emailjs
             .send(serviceId, templateId, templateParams, publicKey)
             .then(() => {
                 setIsSending(false);
-                // 전환 측정: 개인정보(기관명·이름·연락처·내용)는 보내지 않고 유형만 기록
-                trackEvent('generate_lead', { org_category: form.orgCategory, program_type: form.programType });
+                // 전환 측정: 개인정보(기관명·이름·연락처·내용)는 보내지 않고 유형·경로·식별번호만 기록
+                trackEvent('generate_lead', {
+                    org_category: form.orgCategory,
+                    program_type: form.programType,
+                    referral,
+                    lead_id: leadId,
+                });
                 onSubmitted();
             })
             .catch(() => {
                 setIsSending(false);
-                trackEvent('inquiry_error', { org_category: form.orgCategory });
+                trackEvent('inquiry_error', { org_category: form.orgCategory, lead_id: leadId });
                 if (onError) {
                     onError();
                 } else {
@@ -235,6 +277,25 @@ const InquiryForm: React.FC<InquiryFormProps> = ({ onSubmitted, onError }) => {
                     placeholder="예: 임직원 약 40명 / 2026년 5월 중 희망"
                     className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 />
+            </div>
+
+            <div>
+                <label htmlFor="referral" className="block text-xs font-bold text-slate-700 mb-1">
+                    오픈더쉐어를 어떻게 알게 되셨나요? <span className="text-slate-400 font-medium">(선택)</span>
+                </label>
+                <select
+                    id="referral"
+                    value={form.referral}
+                    onChange={(e) => set('referral', e.target.value)}
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                >
+                    <option value="">선택해 주세요</option>
+                    {REFERRAL_OPTIONS.map((o) => (
+                        <option key={o} value={o}>
+                            {o}
+                        </option>
+                    ))}
+                </select>
             </div>
 
             <div>

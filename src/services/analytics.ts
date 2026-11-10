@@ -26,6 +26,8 @@ const SITE_ID = 'openthe.kr';
  */
 export type AnalyticsEventName =
     | 'inquiry_open' // 문의 모달 열기 (source: 어느 버튼에서)
+    | 'form_start' // 문의 폼에 처음 입력 (열기 → 입력 → 제출 이탈 지점 파악)
+    | 'contact_click' // 전화·이메일 링크 클릭 (channel, location) — 폼 밖 문의 경로
     | 'generate_lead' // 문의 제출 성공 (GA4 권장 이벤트명 → 전환으로 지정)
     | 'inquiry_error' // 문의 제출 실패 (EmailJS 오류)
     | 'portfolio_view' // 포트폴리오 상세 열람

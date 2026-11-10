@@ -90,7 +90,9 @@ from v_site_events order by occurred_at desc limit 20;
 -- 일별 트래픽·전환
 select * from v_daily_traffic order by day_kst desc limit 30;
 
--- 관심 기업 (IP 소유 기관별). 통신사(KT, SK Broadband, LG U+)는 개인 회선이라 제외하고 보기
+-- 관심 기업 (IP 소유 기관별, 참고용). 통신사(KT, SK Broadband, LG U+)는 개인 회선이라 제외하고 보기
+-- org 는 회선 소유자일 뿐이라 자체 대역을 가진 대기업·공공기관·대학만 잡힘. region/city 도 시 단위까지(서울 구 단위 불가).
+-- 정확도 한계는 DATA_COLLECTED.md 3-2 참조
 select * from v_org_visits
 where org !~* '(kt|korea telecom|sk broadband|lg ?u|lg powercomm|mobile)'
 order by sessions desc limit 50;
@@ -103,6 +105,28 @@ from site_events o
 left join site_events l on l.session_id = o.session_id and l.event_name = 'generate_lead'
 where o.event_name = 'inquiry_open'
 group by 1 order by opened desc;
+
+-- 문의 퍼널: 폼 열기 → 작성 시작 → 접수 (세션 수)
+select count(distinct session_id) filter (where event_name = 'inquiry_open')  as opened,
+       count(distinct session_id) filter (where event_name = 'form_start')    as started,
+       count(distinct session_id) filter (where event_name = 'generate_lead') as submitted,
+       count(distinct session_id) filter (where event_name = 'contact_click') as contact_clicked
+from site_events;
+
+-- 문의별 유입 채널 (lead_id 는 문의 메일 제목 [L…] 과 같은 값 → 계약 결과와 연결)
+select l.occurred_at at time zone 'Asia/Seoul' as lead_kst,
+       l.props->>'lead_id'  as lead_id,
+       l.props->>'referral' as referral,
+       l.props->>'org_category' as org_category,
+       f.utm_source, f.utm_campaign, f.referrer
+from site_events l
+left join lateral (
+  select utm_source, utm_campaign, referrer from site_events p
+  where p.session_id = l.session_id and p.event_name = 'page_view'
+  order by p.occurred_at limit 1
+) f on true
+where l.event_name = 'generate_lead'
+order by l.occurred_at desc;
 
 -- 인기 포트폴리오 / 검색어
 select props->>'item_title' as title, count(*) from site_events

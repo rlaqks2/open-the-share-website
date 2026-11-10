@@ -22,6 +22,8 @@ const LOOKUP_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 const ALLOWED_EVENTS = new Set([
   'page_view',
   'inquiry_open',
+  'form_start',
+  'contact_click',
   'generate_lead',
   'inquiry_error',
   'portfolio_view',

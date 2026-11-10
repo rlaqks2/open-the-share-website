@@ -2,6 +2,18 @@
 
 콘텐츠(포트폴리오 추가 등) 변경은 기록하지 않습니다. 구조·규칙·배포·외부연동이 바뀔 때만 기록합니다.
 
+## 2026-11-10 (2) — 문의 퍼널·채널 측정 1단계
+
+- 이벤트 추가: `form_start`(문의 폼 첫 입력), `contact_click`(푸터 전화·휴대전화·이메일 — 이번에 `tel:`/`mailto:` 링크로 변경)
+- 문의 폼: 선택 항목 "어떻게 알게 되셨나요?" 추가, 제출 시 `lead_id`(L+YYMMDD-4자) 생성 → `generate_lead` props + 메일 제목·본문에 포함
+- Edge Function `collect` 허용목록에 새 이벤트 추가 — 2026-11-10 재배포 완료(version 2, Verify JWT OFF 유지, 테스트 이벤트 저장 확인 후 삭제)
+- 처리방침·문의폼 고지 갱신 (시행일 2026-11-10), 문서: DATA_COLLECTED 2·6장, ANALYTICS 퍼널·lead 쿼리
+
+## 2026-11-10 — IP 지역·기관 데이터 정확도 한계 명시
+
+- `ip_lookups.org`(회선 소유자, 대부분 통신사)·`region`/`city`(시 단위, 서울 구 단위 불가)를 **참고용**으로 규정 — 수집은 유지
+- 문서: `DATA_COLLECTED.md` 3-2·3-3·6장, `ANALYTICS.md` 관심 기업 쿼리 주석
+
 ## 2026-11-09 (4) — 측정 레이어 · GA4 · Supabase(Postgres) 1차 데이터 수집
 
 - `src/services/analytics.ts` 신설: `trackPageView` / `trackEvent` 단일 진입점 → GA4 · Supabase · 기존 구글 시트로 분기 (환경변수 없으면 전부 비활성, dev 서버 비활성)
