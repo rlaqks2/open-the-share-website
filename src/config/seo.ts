@@ -9,5 +9,5 @@
  */
 export const siteVerification = {
     naver: '',
-    google: '',
+    google: 'y1JM41r4sz9Wmc1x_e04jRCWZQYseezNMOfMi6wTpho',
 };
