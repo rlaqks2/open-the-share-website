@@ -65,7 +65,7 @@ git push origin master
 
 ## 3-1. 검색엔진 등록 (네이버·구글)
 
-- `public/robots.txt`(전체 허용 + 사이트맵 위치), `public/sitemap.xml`(메인 주소 1개 — SPA 라 `?story=` 상세는 canonical 이 메인이라 제외)
+- `public/robots.txt`(전체 허용 + 사이트맵 위치, 네이버 진단 호환을 위해 ASCII 만 사용 — 한글 주석 금지), `public/sitemap.xml`(메인 주소 1개 — SPA 라 `?story=` 상세는 canonical 이 메인이라 제외)
 - 빌드 때 `scripts/seo-html.ts` 가 `index.html` 에 넣는 것: ① 소유확인 메타태그 ② JSON-LD(Organization·WebSite) ③ `#root` 안 정적 본문(히어로·프로그램·연락처). 내용은 `mockData` 에서 읽으므로 문구를 바꾸면 다음 빌드에 자동 반영. React 가 뜨면 정적 본문은 실제 화면으로 교체됨
 - 테스트 사이트는 `vite.config.ts` 가 `noindex` 를 넣으므로 검색에 잡히지 않음
 - **등록 절차 (사람이 1회)**
