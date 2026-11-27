@@ -2,7 +2,7 @@
 
 콘텐츠(포트폴리오 추가 등) 변경은 기록하지 않습니다. 구조·규칙·배포·외부연동이 바뀔 때만 기록합니다.
 
-## 2026-11-27 — 검색엔진 노출 기반 (브랜치 `feature/supabase-content`, 미배포)
+## 2026-11-27 — 검색엔진 노출 기반 (운영 배포 2026-11-27)
 
 - `public/robots.txt`·`public/sitemap.xml` 추가
 - Vite 플러그인 `scripts/seo-html.ts`: 빌드 때 `index.html` 에 소유확인 메타(`src/config/seo.ts`, 값 있을 때만)·JSON-LD(Organization·WebSite)·`#root` 정적 본문(mockData 의 히어로·프로그램·회사정보)을 넣음. JS 를 실행하지 않는 검색 로봇도 회사·프로그램 내용을 읽을 수 있게 함
