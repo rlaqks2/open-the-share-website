@@ -2,6 +2,13 @@
 
 콘텐츠(포트폴리오 추가 등) 변경은 기록하지 않습니다. 구조·규칙·배포·외부연동이 바뀔 때만 기록합니다.
 
+## 2026-11-27 — 검색엔진 노출 기반 (브랜치 `feature/supabase-content`, 미배포)
+
+- `public/robots.txt`·`public/sitemap.xml` 추가
+- Vite 플러그인 `scripts/seo-html.ts`: 빌드 때 `index.html` 에 소유확인 메타(`src/config/seo.ts`, 값 있을 때만)·JSON-LD(Organization·WebSite)·`#root` 정적 본문(mockData 의 히어로·프로그램·회사정보)을 넣음. JS 를 실행하지 않는 검색 로봇도 회사·프로그램 내용을 읽을 수 있게 함
+- `mockData.ts` 의 `BASE_URL` 을 `import.meta.env?.BASE_URL ?? "/"` 로 변경 (Node 에서 읽는 vite.config 대응, 브라우저 빌드 결과는 동일)
+- DEPLOYMENT §3-1(검색 등록 절차), STRUCTURE 갱신
+
 ## 2026-11-25 (3) — 현장스케치 누락 27건 복구 + 수집 경로를 카테고리 목록으로 변경 (브랜치 `feature/supabase-content`)
 
 - 원인: `sync_blog.py` 가 RSS(전체 카테고리 최근 50개, 2026-08-31 이후)만 봐서 그 이전 현장스케치 글은 한 번도 수집되지 않음. 블로그 현장스케치 125건 중 사이트 98건 → 27건 누락 (2018~2023년 25건 + 최근 2건). 의도적으로 뺀 글은 없었음(git 이력 확인)

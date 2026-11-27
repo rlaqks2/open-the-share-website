@@ -63,6 +63,18 @@ git push origin master
 - DNS (도메인 등록업체): apex `openthe.kr` → GitHub Pages A 레코드 4개(185.199.108~111.153), `www` → CNAME `rlaqks2.github.io`
 - 저장소 Settings → Pages → Custom domain = `openthe.kr`, **Enforce HTTPS 체크**
 
+## 3-1. 검색엔진 등록 (네이버·구글)
+
+- `public/robots.txt`(전체 허용 + 사이트맵 위치), `public/sitemap.xml`(메인 주소 1개 — SPA 라 `?story=` 상세는 canonical 이 메인이라 제외)
+- 빌드 때 `scripts/seo-html.ts` 가 `index.html` 에 넣는 것: ① 소유확인 메타태그 ② JSON-LD(Organization·WebSite) ③ `#root` 안 정적 본문(히어로·프로그램·연락처). 내용은 `mockData` 에서 읽으므로 문구를 바꾸면 다음 빌드에 자동 반영. React 가 뜨면 정적 본문은 실제 화면으로 교체됨
+- 테스트 사이트는 `vite.config.ts` 가 `noindex` 를 넣으므로 검색에 잡히지 않음
+- **등록 절차 (사람이 1회)**
+  1. 네이버 서치어드바이저(searchadvisor.naver.com) → 사이트 등록 `https://openthe.kr` → 소유확인 "HTML 태그" 의 content 값을 `src/config/seo.ts` 의 `naver` 에 넣고 배포 → 확인 버튼
+  2. 구글 서치 콘솔 → URL 접두어 `https://openthe.kr/` → "HTML 태그" 값을 `google` 에 넣고 배포 → 확인
+  3. 두 곳 모두 사이트맵 제출: `https://openthe.kr/sitemap.xml`. 네이버는 "요청 → 웹 페이지 수집" 에 메인 주소도 요청
+  4. 네이버 스마트플레이스·다음 검색등록은 사이트 코드와 무관 (회사 정보로 직접 신청)
+- 소유확인 태그는 등록 후에도 지우지 않는다 (지우면 소유권이 풀림)
+
 ## 4. 환경변수 (빌드 시 주입)
 
 | 이름 | 어디에 등록 | 비고 |

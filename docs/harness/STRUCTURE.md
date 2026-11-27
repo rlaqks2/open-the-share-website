@@ -52,7 +52,7 @@ open-the-share-dev/
 ├── README.md                      저장소 소개·빠른 시작
 ├── index.html                     SPA 진입 HTML (no-referrer 메타 R3, OG 태그)
 ├── package.json                   npm 스크립트 (dev/build/typecheck 가 먼저 content:pull)
-├── vite.config.ts                 base 경로(운영 '/', 테스트 '/open-the-share-dev/'), [DEV] 표시
+├── vite.config.ts                 base 경로(운영 '/', 테스트 '/open-the-share-dev/'), [DEV] 표시, SEO 플러그인
 ├── tailwind.config.js             brand(로고 블루)·amber 팔레트
 ├── tsconfig*.json                 strict + noUnusedLocals (R5)
 ├── .env.example                   환경변수 예시 (.env.local 로 복사, git 제외)
@@ -65,6 +65,7 @@ open-the-share-dev/
 │   ├── types.ts                   PortfolioItem / PartnerItem / PressReleaseItem
 │   ├── vite-env.d.ts              import.meta.env 타입
 │   ├── config/site.ts             외부 서비스 공개 설정 (EmailJS 등)
+│   ├── config/seo.ts              검색엔진 소유확인 코드 (네이버·구글, 공개값)
 │   ├── data/
 │   │   ├── mockData.ts            ★ 문구·프로그램·파트너·FAQ·회사정보 (코드로 관리)
 │   │   ├── privacyPolicy.ts       개인정보 처리방침 + 문의폼 고지 (R8)
@@ -94,7 +95,8 @@ open-the-share-dev/
 │   ├── content-source.json        Supabase URL + publishable 키 (공개값)
 │   ├── pull-content.mjs           ★ 빌드 전 DB → src/data/generated/*.json
 │   ├── sync_blog.py               ★ 네이버 블로그 RSS → 썸네일 + DB (--stage / --ingest-pending)
-│   └── check-prod-remote.mjs      ship/deploy.bat 가 운영 저장소인지 확인
+│   ├── check-prod-remote.mjs      ship/deploy.bat 가 운영 저장소인지 확인
+│   └── seo-html.ts                빌드 때 index.html 에 소유확인 태그·JSON-LD·정적 본문(mockData 기반) 삽입
 │
 ├── supabase/
 │   ├── config.toml                collect 함수 verify_jwt=false
@@ -221,3 +223,4 @@ flowchart LR
 | 블로그 수집 규칙 | `scripts/sync_blog.py` | [DATA_GUIDE §3](DATA_GUIDE.md), [VERIFICATION L4](VERIFICATION.md) |
 | 배포 경로·환경변수 | `.github/workflows/*`, `vite.config.ts` | [DEPLOYMENT](DEPLOYMENT.md) |
 | 처리방침 | `src/data/privacyPolicy.ts` | CLAUDE.md R8 |
+| 검색 노출(소유확인·사이트맵·구조화 데이터) | `src/config/seo.ts`, `scripts/seo-html.ts`, `public/robots.txt`·`sitemap.xml` | [DEPLOYMENT §3-1](DEPLOYMENT.md) |

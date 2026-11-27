@@ -10,7 +10,8 @@ import { PortfolioItem, PartnerItem, PressReleaseItem } from "../types";
 import portfolioRows from './generated/portfolio.json';
 import pressRows from './generated/press.json';
 
-const BASE_URL = import.meta.env.BASE_URL;
+// vite.config.ts(Node, scripts/seo-html.ts)에서도 읽으므로 env 가 없으면 "/" 로 둔다
+const BASE_URL = import.meta.env?.BASE_URL ?? "/";
 
 /** DB 에는 'images/portfolio/item_001.jpg' 같은 상대경로가 들어 있어, 배포 경로(BASE_URL)를 붙인다. https URL 은 그대로. */
 const withBase = (u: string) => (/^https?:\/\//.test(u) ? u : `${BASE_URL}${u.replace(/^\//, '')}`);

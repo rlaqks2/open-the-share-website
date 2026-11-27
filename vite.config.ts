@@ -1,6 +1,7 @@
 // vite.config.ts
 import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
+import { seoHtml } from './scripts/seo-html'
 
 /**
  * 배포 대상 구분
@@ -22,6 +23,6 @@ const devSiteHtml = (): Plugin => ({
 })
 
 export default defineConfig({
-    plugins: [react(), devSiteHtml()],
+    plugins: [react(), devSiteHtml(), seoHtml()],
     base,
 })
