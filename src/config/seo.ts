@@ -8,6 +8,6 @@
  * ⚠️ 이 파일은 vite.config.ts(Node)에서도 읽으므로 import.meta.env 를 쓰지 마세요.
  */
 export const siteVerification = {
-    naver: '',
+    naver: '4ae681232a6b67d3fcbf9afca2bb539985637fc6',
     google: 'y1JM41r4sz9Wmc1x_e04jRCWZQYseezNMOfMi6wTpho',
 };
